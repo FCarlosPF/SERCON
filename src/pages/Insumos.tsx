@@ -9,6 +9,7 @@ import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
 import '../css/insumos.css'
 import { useState } from "react";
+import InsumoGateway from "../gateway/InsumoGateway";
 
 function createData(
   id: number,  
@@ -43,8 +44,12 @@ const handleCloseModal = () => {
   setShowModal(false);
 };
 
+const handleForm = (e : any) =>{
+  e.preventDefault()
+}
+
   return (
-    <>
+    <> 
       <div className="title">Insumos</div>
       <Button variant="contained" color="success" sx={{mb: 4, mt: 2}} onClick={handleOpenModal}>
         Crear
@@ -53,7 +58,7 @@ const handleCloseModal = () => {
         <div className="modal">
           <div className="modal-content">
             <h2>Formulario de Producto</h2>
-            <form>
+            <form onClick={handleForm}>
               <div className="form-group">
                 <label htmlFor="id">ID:</label>
                 <input type="text" id="id" placeholder="ID" className="input-field" />
