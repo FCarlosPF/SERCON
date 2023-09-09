@@ -9,7 +9,6 @@ import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
 import '../css/insumos.css'
 import { useState } from "react";
-import InsumoGateway from "../gateway/InsumoGateway";
 
 function createData(
   id: number,  

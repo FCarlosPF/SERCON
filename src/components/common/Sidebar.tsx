@@ -1,4 +1,4 @@
-import { Avatar, Drawer, List, Stack, Toolbar } from "@mui/material";
+import {Drawer, List, Stack, Toolbar } from "@mui/material";
 import colorConfigs from "../../configs/colorConfigs";
 import sizeConfigs from "../../configs/sizeConfigs";
 import appRoutes from "../../routes/appRoutes";

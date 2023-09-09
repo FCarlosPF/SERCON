@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {useEffect,useState} from 'react'
 
-const url = 'https://jsonplaceholder.typicode.com/users'
+const url = 'http://localhost:8082/api/producto'
 
 const ProductosGateway = () => {
   const[productos,setProductos] =useState([])

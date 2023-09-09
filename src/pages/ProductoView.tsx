@@ -17,17 +17,18 @@ export const Productos = () => {
     descripcion: string,
     unidad: number,
     medida: number,
-    tipo: string
+    tipo: string,
+    precio: number
   ) {
-    return { id, nombre, descripcion, unidad, medida, tipo };
+    return { id, nombre, descripcion, unidad, medida, tipo, precio };
   }
 
   const rows = [
-    createData(1, "camisaco", "camisa de industria", 5, 7.5, "camisa"),
-    createData(2, "camisaco", "camisa de industria", 5, 7.5, "camisa"),
-    createData(3, "camisaco", "camisa de industria", 5, 7.5, "camisa"),
-    createData(4, "camisaco", "camisa de industria", 5, 7.5, "camisa"),
-    createData(5, "camisaco", "camisa de industria", 5, 7.5, "camisa"),
+    createData(1, "camisaco", "camisa de industria", 5, 7.5, "camisa", 15),
+    createData(2, "camisaco", "camisa de industria", 5, 7.5, "camisa", 15),
+    createData(3, "camisaco", "camisa de industria", 5, 7.5, "camisa", 15),
+    createData(4, "camisaco", "camisa de industria", 5, 7.5, "camisa", 15),
+    createData(5, "camisaco", "camisa de industria", 5, 7.5, "camisa", 15),
   ];
 
 
@@ -96,6 +97,7 @@ export const Productos = () => {
               <TableCell align="right">Unidad_Medida&nbsp;(g)</TableCell>
               <TableCell align="right">Medida&nbsp;(g)</TableCell>
               <TableCell align="right">Tipo&nbsp;(g)</TableCell>
+              <TableCell align="right">Precio&nbsp;(g)</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -112,6 +114,7 @@ export const Productos = () => {
                 <TableCell align="right">{row.unidad}</TableCell>
                 <TableCell align="right">{row.medida}</TableCell>
                 <TableCell align="right">{row.tipo}</TableCell>
+                <TableCell align="right">{row.precio}</TableCell>
                 <TableCell align="right">
                   <Button variant="outlined" color="error">
                     Eliminar
