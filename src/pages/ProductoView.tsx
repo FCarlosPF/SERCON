@@ -9,84 +9,78 @@ import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
 import "../css/productos.css";
 import { useState } from "react";
+import ProductoGateway from "../gateway/ProductosGateway";
 
 export const Productos = () => {
-  function createData(
-    id: number,
-    nombre: string,
-    descripcion: string,
-    unidad: number,
-    medida: number,
-    tipo: string,
-    precio: number
-  ) {
-    return { id, nombre, descripcion, unidad, medida, tipo, precio };
+  const [productos, setProductos] = useState<Producto[]>([]);
+  const [id, setId] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [unidad, setUnidad] = useState("");
+  const [medida, setMedida] = useState("");
+  const [tipo, setTipo] = useState("");
+  const [precio, setPrecio] = useState("");
+  const [operation, setOperation] = useState(1);
+  const [title, setTitle] = useState("");
+
+  interface Producto {
+    producto_id: number;
+    nombre: string;
+    descripcion: string;
+    unidad_medida: string;
+    medida: number;
+    tipo: string;
+    precio: number;
   }
 
-  const rows = [
-    createData(1, "camisaco", "camisa de industria", 5, 7.5, "camisa", 15),
-    createData(2, "camisaco", "camisa de industria", 5, 7.5, "camisa", 15),
-    createData(3, "camisaco", "camisa de industria", 5, 7.5, "camisa", 15),
-    createData(4, "camisaco", "camisa de industria", 5, 7.5, "camisa", 15),
-    createData(5, "camisaco", "camisa de industria", 5, 7.5, "camisa", 15),
-  ];
+  const productoGateway = new ProductoGateway();
 
+  productoGateway
+    .findAll()
+    .then((productos) => {
+      setProductos(productos);
+    })
+    .catch((error) => {});
 
-  const [showModal, setShowModal] = useState(false);
-
-  const handleOpenModal = () => {
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
+  const openModal = (
+    op: number,
+    nombre: string,
+    descripcion: string,
+    unidad: string,
+    medida: string,
+    tipo: string
+  ) => {
+    setId("");
+    setNombre("");
+    setDescripcion("");
+    setUnidad("");
+    setMedida("");
+    setTipo("");
+    if (op === 1) {
+      setTitle("Registrar Insumo");
+    } else if (op === 2) {
+      setTitle("Editar Insumo");
+      setId(id);
+      setNombre(nombre);
+      setDescripcion(descripcion);
+      setUnidad(unidad);
+      setMedida(medida);
+      setTipo(tipo);
+    }
   };
 
   return (
     <>
       <div className="title">Productos</div>
-      <Button variant="contained" color="success" sx={{ mb: 4, mt: 2 }} onClick={handleOpenModal} >
+      <button
+        onClick={() => openModal(1, "", "", "", "", "")}
+        type="button"
+        className="btn btn-dark"
+        data-bs-toggle="modal"
+        data-bs-target="#modalInsumos"
+      >
         Crear
-      </Button>
-      {showModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>Formulario de Producto</h2>
-            <form>
-              <div className="form-group">
-                <label htmlFor="id">ID:</label>
-                <input type="text" id="id" placeholder="ID" className="input-field" />
-              </div>
-              <div className="form-group">
-                <label htmlFor="nombre">Nombre:</label>
-                <input type="text" id="nombre" placeholder="Nombre" className="input-field" />
-              </div>
-              <div className="form-group">
-                <label htmlFor="descripcion">Descripción:</label>
-                <textarea id="descripcion" placeholder="Descripción" className="input-field"></textarea>
-              </div>
-              <div className="form-group">
-                <label htmlFor="unidad_medida">Unidad de Medida:</label>
-                <input type="text" id="unidad_medida" placeholder="Unidad de Medida" className="input-field" />
-              </div>
-              <div className="form-group">
-                <label htmlFor="medida">Medida:</label>
-                <input type="text" id="medida" placeholder="Medida" className="input-field" />
-              </div>
-              <div className="form-group">
-                <label htmlFor="tipo">Tipo:</label>
-                <input type="text" id="tipo" placeholder="Tipo" className="input-field" />
-              </div>
-              <button type="submit" className="submit-button">
-                Enviar
-              </button>
-              <button type="submit" className="cancel-button" onClick={handleCloseModal}>
-                Cancelar
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+      </button>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -101,17 +95,17 @@ export const Productos = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {productos.map((row) => (
               <TableRow
-                key={row.id}
+                key={row.producto_id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
-                  {row.id}
+                  {row.producto_id}
                 </TableCell>
                 <TableCell align="right">{row.nombre}</TableCell>
                 <TableCell align="right">{row.descripcion}</TableCell>
-                <TableCell align="right">{row.unidad}</TableCell>
+                <TableCell align="right">{row.unidad_medida}</TableCell>
                 <TableCell align="right">{row.medida}</TableCell>
                 <TableCell align="right">{row.tipo}</TableCell>
                 <TableCell align="right">{row.precio}</TableCell>
@@ -121,13 +115,125 @@ export const Productos = () => {
                   </Button>
                 </TableCell>
                 <TableCell align="right">
-                  <Button color="secondary">Editar</Button>
-                </TableCell>
+                <button
+                    onClick={() =>
+                      openModal(2, nombre, descripcion, unidad, medida, tipo)
+                    }
+                    type="button"
+                    className="btn btn-dark"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalInsumos"
+                  >
+                    Editar
+                  </button>                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <div className="modal-body">
+        <input type="hidden" id="id" />
+        <div className="input-group mb-3">
+          <span className="input-group-text"></span>
+        </div>
+      </div>
+      <div id="modalInsumos" className="modal fade" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <label className="h5">{title}</label>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <input type="hidden" id="id" />
+              <div className="input-group mb-3">
+                <span className="input-group-text">
+                  <i className="fa-solid fa-gift"></i>
+                </span>
+                <input
+                  type="text"
+                  id="nombre"
+                  className="form-control"
+                  placeholder="Nombre"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                />
+              </div>
+              <div className="input-group mb-3">
+                <span className="input-group-text">
+                  <i className="fa-solid fa-gift"></i>
+                </span>
+                <input
+                  type="text"
+                  id="descripcion"
+                  className="form-control"
+                  placeholder="Descripcion"
+                  value={descripcion}
+                  onChange={(e) => setDescripcion(e.target.value)}
+                />
+              </div>
+              <div className="input-group mb-3">
+                <span className="input-group-text">
+                  <i className="fa-solid fa-gift"></i>
+                </span>
+                <input
+                  type="text"
+                  id="unidad"
+                  className="form-control"
+                  placeholder="Unidad"
+                  value={unidad}
+                  onChange={(e) => setUnidad(e.target.value)}
+                />
+              </div>
+              <div className="input-group mb-3">
+                <span className="input-group-text">
+                  <i className="fa-solid fa-gift"></i>
+                </span>
+                <input
+                  type="text"
+                  id="medida"
+                  className="form-control"
+                  placeholder="Medida"
+                  value={medida}
+                  onChange={(e) => setMedida(e.target.value)}
+                />
+              </div>
+              <div className="input-group mb-3">
+                <span className="input-group-text">
+                  <i className="fa-solid fa-gift"></i>
+                </span>
+                <input
+                  type="text"
+                  id="tipo"
+                  className="form-control"
+                  placeholder="Tipo"
+                  value={tipo}
+                  onChange={(e) => setTipo(e.target.value)}
+                />
+              </div>
+              <div className="" d-grid col-6 mx-auto>
+                <button className="btn btn-success">
+                  <i className="fa-solid fa-floppy-disk">Guardar</i>
+                </button>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

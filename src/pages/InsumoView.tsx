@@ -7,91 +7,115 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
-import '../css/insumos.css'
-import { useState } from "react";
-
-function createData(
-  id: number,  
-  nombre: string,
-  descripcion: string,
-  unidad: number,
-  medida: number,
-  tipo: string
-) {
-  return { id, nombre, descripcion, unidad, medida, tipo};
-}
-
-const rows = [
-  createData(1,"camisaco","camisa de industria",5,7.5,"camisa"),
-  createData(2,"camisaco","camisa de industria",5,7.5,"camisa"),
-  createData(3,"camisaco","camisa de industria",5,7.5,"camisa"),
-  createData(4,"camisaco","camisa de industria",5,7.5,"camisa"),
-  createData(5,"camisaco","camisa de industria",5,7.5,"camisa"),
-];
-
-
+import "../css/insumos.css";
+import { useState, useEffect } from "react";
+import { show_alerta } from "../functions/alert";
+import axios from "axios";
+import InsumoGateway from "../gateway/InsumoGateway";
 
 export const Insumos = () => {
-    
-const [showModal, setShowModal] = useState(false);
+  const [insumos, setInsumos] = useState<Insumo[]>([]);
+  const [insumo_id, setInsumo_id] = useState(0);
+  const [nombre, setNombre] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [unidad_medida, setUnidad_medida] = useState("");
+  const [medida, setMedida] = useState(0);
+  const [tipo, setTipo] = useState("");
+  const [operation, setOperation] = useState(1);
+  const [title, setTitle] = useState("");
 
-const handleOpenModal = () => {
-  setShowModal(true);
-};
+  const insumoGateway = new InsumoGateway();
 
-const handleCloseModal = () => {
-  setShowModal(false);
-};
+  interface Insumo {
+    insumo_id?: number;
+    nombre: string;
+    descripcion: string;
+    unidad_medida: string;
+    medida: number;
+    tipo: string;
+  }
 
-const handleForm = (e : any) =>{
-  e.preventDefault()
-}
+  insumoGateway
+    .findAll()
+    .then((insumos) => {
+      setInsumos(insumos);
+    })
+    .catch((error) => {});
+
+  /* const findById = (id: number) =>{
+    insumoGateway.findById(id)
+  .then((insumo) => {
+    setInsumo(insumo)
+  })
+  .catch((error) => {
+  });
+  }
+
+  const remove = (id: number) =>{
+    insumoGateway.remove(id)
+  .then((insumo) => {
+  })
+  .catch((error) => {
+  });
+  }
+
+  const update = (id: number,argumentosActualizados : Insumo) =>{
+    insumoGateway.update(id, argumentosActualizados )
+  .then((insumo) => {
+  })
+  .catch((error) => {
+  });
+  } */
+
+  const openModal = (
+    op: number,
+    nombre: string,
+    descripcion: string,
+    unidad: string,
+    medida: number,
+    tipo: string
+  ) => {
+    setInsumo_id(0);
+    setNombre("");
+    setDescripcion("");
+    setUnidad_medida("");
+    setMedida(0);
+    setTipo("");
+    if (op === 1) {
+      setTitle("Registrar Insumo");
+    } else if (op === 2) {
+      setTitle("Editar Insumo");
+      setInsumo_id(insumo_id);
+      setNombre(nombre);
+      setDescripcion(descripcion);
+      setUnidad_medida(unidad_medida);
+      setMedida(medida);
+      setTipo(tipo);
+    }
+  };
+
+  const save = (e: any) => {
+    e.preventDefault();
+    const insumo : Insumo = { nombre, descripcion, unidad_medida, medida, tipo };
+    insumoGateway.create(insumo).then((response)=>{
+      console.log(response)
+    }).catch(error =>{
+      console.log(error)
+    })
+  };
 
   return (
-    <> 
+    <>
       <div className="title">Insumos</div>
-      <Button variant="contained" color="success" sx={{mb: 4, mt: 2}} onClick={handleOpenModal}>
+      <button
+        onClick={() => openModal(1, "", "", "", 0, "")}
+        type="button"
+        className="btn btn-dark"
+        data-bs-toggle="modal"
+        data-bs-target="#modalInsumos"
+      >
         Crear
-      </Button>
-      {showModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>Formulario de Producto</h2>
-            <form onClick={handleForm}>
-              <div className="form-group">
-                <label htmlFor="id">ID:</label>
-                <input type="text" id="id" placeholder="ID" className="input-field" />
-              </div>
-              <div className="form-group">
-                <label htmlFor="nombre">Nombre:</label>
-                <input type="text" id="nombre" placeholder="Nombre" className="input-field" />
-              </div>
-              <div className="form-group">
-                <label htmlFor="descripcion">Descripción:</label>
-                <textarea id="descripcion" placeholder="Descripción" className="input-field"></textarea>
-              </div>
-              <div className="form-group">
-                <label htmlFor="unidad_medida">Unidad de Medida:</label>
-                <input type="text" id="unidad_medida" placeholder="Unidad de Medida" className="input-field" />
-              </div>
-              <div className="form-group">
-                <label htmlFor="medida">Medida:</label>
-                <input type="text" id="medida" placeholder="Medida" className="input-field" />
-              </div>
-              <div className="form-group">
-                <label htmlFor="tipo">Tipo:</label>
-                <input type="text" id="tipo" placeholder="Tipo" className="input-field" />
-              </div>
-              <button type="submit" className="submit-button" >
-                Enviar
-              </button>
-              <button type="submit" className="cancel-button" onClick={handleCloseModal}>
-                Cancelar
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+      </button>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -105,17 +129,17 @@ const handleForm = (e : any) =>{
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {insumos.map((row) => (
               <TableRow
-                key={row.id}
+                key={row.insumo_id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
-                  {row.id}
+                  {row.insumo_id}
                 </TableCell>
                 <TableCell align="right">{row.nombre}</TableCell>
                 <TableCell align="right">{row.descripcion}</TableCell>
-                <TableCell align="right">{row.unidad}</TableCell>
+                <TableCell align="right">{row.unidad_medida}</TableCell>
                 <TableCell align="right">{row.medida}</TableCell>
                 <TableCell align="right">{row.tipo}</TableCell>
                 <TableCell align="right">
@@ -124,13 +148,136 @@ const handleForm = (e : any) =>{
                   </Button>
                 </TableCell>
                 <TableCell align="right">
-                  <Button color="secondary">Editar</Button>
+                  <button
+                    onClick={() =>
+                      openModal(
+                        2,
+                        row.nombre,
+                        row.descripcion,
+                        row.unidad_medida,
+                        row.medida,
+                        row.tipo
+                      )
+                    }
+                    type="button"
+                    className="btn btn-dark"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalInsumos"
+                  >
+                    Editar
+                  </button>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <div className="modal-body">
+        <input type="hidden" id="id" />
+        <div className="input-group mb-3">
+          <span className="input-group-text"></span>
+        </div>
+      </div>
+
+      <div id="modalInsumos" className="modal fade" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <label className="h5">{title}</label>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <input type="hidden" id="id" />
+              <div className="input-group mb-3">
+                <span className="input-group-text">
+                  <i className="fa-solid fa-gift"></i>
+                </span>
+                <input
+                  type="text"
+                  id="nombre"
+                  className="form-control"
+                  placeholder="Nombre"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                />
+              </div>
+              <div className="input-group mb-3">
+                <span className="input-group-text">
+                  <i className="fa-solid fa-gift"></i>
+                </span>
+                <input
+                  type="text"
+                  id="descripcion"
+                  className="form-control"
+                  placeholder="Descripcion"
+                  value={descripcion}
+                  onChange={(e) => setDescripcion(e.target.value)}
+                />
+              </div>
+              <div className="input-group mb-3">
+                <span className="input-group-text">
+                  <i className="fa-solid fa-gift"></i>
+                </span>
+                <input
+                  type="text"
+                  id="unidad"
+                  className="form-control"
+                  placeholder="Unidad"
+                  value={unidad_medida}
+                  onChange={(e) => setUnidad_medida(e.target.value)}
+                />
+              </div>
+              <div className="input-group mb-3">
+                <span className="input-group-text">
+                  <i className="fa-solid fa-gift"></i>
+                </span>
+                <input
+                  type="number"
+                  id="medida"
+                  className="form-control"
+                  placeholder="Medida"
+                  value={(medida)}
+                  onChange={(e) => (setMedida(parseFloat(e.target.value)))}
+                />  
+              </div>
+              <div className="input-group mb-3">
+                <span className="input-group-text">
+                  <i className="fa-solid fa-gift"></i>
+                </span>
+                <input
+                  type="text"
+                  id="tipo"
+                  className="form-control"
+                  placeholder="Tipo"
+                  value={tipo}
+                  onChange={(e) => setTipo(e.target.value)}
+                />
+              </div>
+              <div className="d-grid col-6 mx-auto">
+                <button className="btn btn-success">
+                  <i className="fa-solid fa-floppy-disk" onClick={(e)=>save(e)}>
+                    Guardar
+                  </i>
+                </button>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 };
