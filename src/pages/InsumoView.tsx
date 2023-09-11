@@ -168,7 +168,7 @@ export const Insumos = () => {
                 <TableCell align="right">{row.medida}</TableCell>
                 <TableCell align="right">{row.tipo}</TableCell>
                 <TableCell align="right">
-                  <Button variant="outlined" color="error" onClick={()=>{eliminar(row.insumo_id)}}>
+                  <Button variant="outlined" color="error" onClick={()=>{if (typeof row.insumo_id === 'number')(eliminar(row.insumo_id))}}>
                     Eliminar
                   </Button>
                 </TableCell>
@@ -177,7 +177,7 @@ export const Insumos = () => {
                     onClick={() =>
                       openModal(
                         2,
-                        row.insumo_id,
+                        row.insumo_id || 0,                        
                         row.nombre,
                         row.descripcion,
                         row.unidad_medida,

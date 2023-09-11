@@ -131,12 +131,11 @@ export const Productos = () => {
   const eliminar = (nuevoId : number) =>{
     
    
-    productoGateway.remove(producto_id).then(()=>{
+    productoGateway.remove(nuevoId).then(()=>{
       console.log(producto_id)
     }).catch(error =>{
       console.log(error.response.data)
     })
-    setProducto_id(nuevoId)
   }
 
 
@@ -182,7 +181,7 @@ export const Productos = () => {
                 <TableCell align="right">{row.tipo}</TableCell>
                 <TableCell align="right">{row.precio}</TableCell>
                 <TableCell align="right">
-                  <Button variant="outlined" color="error" onClick={()=>{eliminar(row.producto_id)}}>
+                  <Button variant="outlined" color="error" onClick={()=>{if (typeof row.producto_id === 'number') eliminar(row.producto_id)}}>
                     Eliminar
                   </Button>
                 </TableCell>
@@ -191,7 +190,7 @@ export const Productos = () => {
                     onClick={() =>
                       openModal(
                         2,
-                        row.producto_id,
+                        row.producto_id || 0,                        
                         row.nombre,
                         row.descripcion,
                         row.unidad_medida,
