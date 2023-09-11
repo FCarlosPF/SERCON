@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 const baseURL: string = 'http://localhost:8082/api/producto';
 
 interface Producto {
-  producto_id: number;
+  producto_id?: number;
   nombre: string;
   descripcion: string;
   unidad_medida: string;

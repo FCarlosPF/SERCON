@@ -12,10 +12,13 @@ import { useState, useEffect } from "react";
 import { show_alerta } from "../functions/alert";
 import axios from "axios";
 import InsumoGateway from "../gateway/InsumoGateway";
+import { error } from "console";
+import { useParams } from "react-router-dom";
+
 
 export const Insumos = () => {
   const [insumos, setInsumos] = useState<Insumo[]>([]);
-  const [insumo_id, setInsumo_id] = useState(0);
+  const [insumo_id,setInsumo_id] = useState(0)
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [unidad_medida, setUnidad_medida] = useState("");
@@ -23,7 +26,7 @@ export const Insumos = () => {
   const [tipo, setTipo] = useState("");
   const [operation, setOperation] = useState(1);
   const [title, setTitle] = useState("");
-
+  const {id} = useParams()
   const insumoGateway = new InsumoGateway();
 
   interface Insumo {
@@ -69,13 +72,14 @@ export const Insumos = () => {
 
   const openModal = (
     op: number,
+    insumo_id: number,
     nombre: string,
     descripcion: string,
-    unidad: string,
+    unidad_medida: string,
     medida: number,
     tipo: string
   ) => {
-    setInsumo_id(0);
+    setInsumo_id(0)
     setNombre("");
     setDescripcion("");
     setUnidad_medida("");
@@ -85,7 +89,7 @@ export const Insumos = () => {
       setTitle("Registrar Insumo");
     } else if (op === 2) {
       setTitle("Editar Insumo");
-      setInsumo_id(insumo_id);
+      setInsumo_id(insumo_id)
       setNombre(nombre);
       setDescripcion(descripcion);
       setUnidad_medida(unidad_medida);
@@ -94,21 +98,46 @@ export const Insumos = () => {
     }
   };
 
-  const save = (e: any) => {
+  const save = (e: any) =>{
     e.preventDefault();
+    const id = insumo_id
     const insumo : Insumo = { nombre, descripcion, unidad_medida, medida, tipo };
-    insumoGateway.create(insumo).then((response)=>{
-      console.log(response)
+
+    if(id===0){
+      insumoGateway.create(insumo).then((response)=>{
+        console.log(response)
+      }).catch(error =>{
+        console.log(error.response.data)
+      })
+    }else if(id!==0){
+      insumoGateway.update(id,insumo).then((response)=>{
+        console.log(response)
+      }).catch(error =>{
+        console.log(error.response.data)
+      })
+    }
+
+    console.log(id)
+  }
+
+ 
+  const eliminar = (insumoId : number) =>{
+    
+   
+    insumoGateway.remove(insumoId).then(()=>{
+      console.log(insumo_id)
     }).catch(error =>{
-      console.log(error)
+      console.log(error.response.data)
     })
-  };
+  }
+
+
 
   return (
     <>
       <div className="title">Insumos</div>
       <button
-        onClick={() => openModal(1, "", "", "", 0, "")}
+        onClick={() => openModal(1,0, "", "", "", 0, "")}
         type="button"
         className="btn btn-dark"
         data-bs-toggle="modal"
@@ -143,7 +172,7 @@ export const Insumos = () => {
                 <TableCell align="right">{row.medida}</TableCell>
                 <TableCell align="right">{row.tipo}</TableCell>
                 <TableCell align="right">
-                  <Button variant="outlined" color="error">
+                  <Button variant="outlined" color="error" onClick={()=>{eliminar(row.insumo_id)}}>
                     Eliminar
                   </Button>
                 </TableCell>
@@ -152,6 +181,7 @@ export const Insumos = () => {
                     onClick={() =>
                       openModal(
                         2,
+                        row.insumo_id,
                         row.nombre,
                         row.descripcion,
                         row.unidad_medida,
@@ -192,7 +222,7 @@ export const Insumos = () => {
               ></button>
             </div>
             <div className="modal-body">
-              <input type="hidden" id="id" />
+              <input type="hidden" id="id" value={insumo_id} onChange={(e) => setInsumo_id(parseInt(e.target.value))} />
               <div className="input-group mb-3">
                 <span className="input-group-text">
                   <i className="fa-solid fa-gift"></i>

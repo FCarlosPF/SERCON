@@ -7,33 +7,38 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
-import "../css/productos.css";
-import { useState } from "react";
+import "../css/insumos.css";
+import { useState, useEffect } from "react";
+import { show_alerta } from "../functions/alert";
+import axios from "axios";
+import InsumoGateway from "../gateway/InsumoGateway";
+import { error } from "console";
 import ProductoGateway from "../gateway/ProductosGateway";
+
 
 export const Productos = () => {
   const [productos, setProductos] = useState<Producto[]>([]);
-  const [id, setId] = useState("");
+  const [producto_id,setProducto_id] = useState(0)
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [unidad, setUnidad] = useState("");
-  const [medida, setMedida] = useState("");
+  const [unidad_medida, setUnidad_medida] = useState("");
+  const [medida, setMedida] = useState(0);
   const [tipo, setTipo] = useState("");
-  const [precio, setPrecio] = useState("");
+  const [precio, setPrecio] = useState(0);
   const [operation, setOperation] = useState(1);
   const [title, setTitle] = useState("");
 
+  const productoGateway = new ProductoGateway();
+
   interface Producto {
-    producto_id: number;
+    producto_id?: number;
     nombre: string;
     descripcion: string;
     unidad_medida: string;
     medida: number;
     tipo: string;
-    precio: number;
+    precio: number
   }
-
-  const productoGateway = new ProductoGateway();
 
   productoGateway
     .findAll()
@@ -42,38 +47,105 @@ export const Productos = () => {
     })
     .catch((error) => {});
 
+  /* const findById = (id: number) =>{
+    insumoGateway.findById(id)
+  .then((insumo) => {
+    setInsumo(insumo)
+  })
+  .catch((error) => {
+  });
+  }
+
+  const remove = (id: number) =>{
+    insumoGateway.remove(id)
+  .then((insumo) => {
+  })
+  .catch((error) => {
+  });
+  }
+
+  const update = (id: number,argumentosActualizados : Insumo) =>{
+    insumoGateway.update(id, argumentosActualizados )
+  .then((insumo) => {
+  })
+  .catch((error) => {
+  });
+  } */
+
   const openModal = (
     op: number,
+    producto_id: number,
     nombre: string,
     descripcion: string,
-    unidad: string,
-    medida: string,
-    tipo: string
+    unidad_medida: string,
+    medida: number,
+    tipo: string,
+    precio : number
   ) => {
-    setId("");
+    setProducto_id(0)
     setNombre("");
     setDescripcion("");
-    setUnidad("");
-    setMedida("");
+    setUnidad_medida("");
+    setMedida(0);
     setTipo("");
+    setPrecio(0);
     if (op === 1) {
-      setTitle("Registrar Insumo");
+      setTitle("Registrar Producto");
     } else if (op === 2) {
-      setTitle("Editar Insumo");
-      setId(id);
+      setTitle("Editar Producto");
+      setProducto_id(producto_id)
       setNombre(nombre);
       setDescripcion(descripcion);
-      setUnidad(unidad);
+      setUnidad_medida(unidad_medida);
       setMedida(medida);
       setTipo(tipo);
+      setPrecio(precio);
+
     }
   };
 
+  const save = (e: any) =>{
+    e.preventDefault();
+    const id = producto_id;
+    const producto : Producto = { nombre, descripcion, unidad_medida, medida, tipo,precio };
+
+    if(id===0){
+      productoGateway.create(producto).then((response)=>{
+        console.log(response)
+      }).catch(error =>{
+        console.log(error.response.data)
+      })
+    }else if(id!==0){
+      productoGateway.update(id,producto).then((response)=>{
+        console.log(response)
+      }).catch(error =>{
+        console.log(error.response.data)
+      })
+    }
+
+    console.log(id)
+  }
+
+
+ 
+  const eliminar = (nuevoId : number) =>{
+    
+   
+    productoGateway.remove(producto_id).then(()=>{
+      console.log(producto_id)
+    }).catch(error =>{
+      console.log(error.response.data)
+    })
+    setProducto_id(nuevoId)
+  }
+
+
+
   return (
     <>
-      <div className="title">Productos</div>
+      <div className="title">Insumos</div>
       <button
-        onClick={() => openModal(1, "", "", "", "", "")}
+        onClick={() => openModal(1,0, "", "", "", 0, "",0)}
         type="button"
         className="btn btn-dark"
         data-bs-toggle="modal"
@@ -91,7 +163,6 @@ export const Productos = () => {
               <TableCell align="right">Unidad_Medida&nbsp;(g)</TableCell>
               <TableCell align="right">Medida&nbsp;(g)</TableCell>
               <TableCell align="right">Tipo&nbsp;(g)</TableCell>
-              <TableCell align="right">Precio&nbsp;(g)</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -108,16 +179,24 @@ export const Productos = () => {
                 <TableCell align="right">{row.unidad_medida}</TableCell>
                 <TableCell align="right">{row.medida}</TableCell>
                 <TableCell align="right">{row.tipo}</TableCell>
-                <TableCell align="right">{row.precio}</TableCell>
                 <TableCell align="right">
-                  <Button variant="outlined" color="error">
+                  <Button variant="outlined" color="error" onClick={()=>{eliminar(row.producto_id)}}>
                     Eliminar
                   </Button>
                 </TableCell>
                 <TableCell align="right">
-                <button
+                  <button
                     onClick={() =>
-                      openModal(2, nombre, descripcion, unidad, medida, tipo)
+                      openModal(
+                        2,
+                        row.producto_id,
+                        row.nombre,
+                        row.descripcion,
+                        row.unidad_medida,
+                        row.medida,
+                        row.tipo,
+                        row.precio
+                      )
                     }
                     type="button"
                     className="btn btn-dark"
@@ -125,7 +204,8 @@ export const Productos = () => {
                     data-bs-target="#modalInsumos"
                   >
                     Editar
-                  </button>                </TableCell>
+                  </button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -137,6 +217,7 @@ export const Productos = () => {
           <span className="input-group-text"></span>
         </div>
       </div>
+
       <div id="modalInsumos" className="modal fade" aria-hidden="true">
         <div className="modal-dialog">
           <div className="modal-content">
@@ -150,7 +231,7 @@ export const Productos = () => {
               ></button>
             </div>
             <div className="modal-body">
-              <input type="hidden" id="id" />
+              <input type="hidden" id="id" value={producto_id} onChange={(e) => setProducto_id(parseInt(e.target.value))} />
               <div className="input-group mb-3">
                 <span className="input-group-text">
                   <i className="fa-solid fa-gift"></i>
@@ -186,8 +267,8 @@ export const Productos = () => {
                   id="unidad"
                   className="form-control"
                   placeholder="Unidad"
-                  value={unidad}
-                  onChange={(e) => setUnidad(e.target.value)}
+                  value={unidad_medida}
+                  onChange={(e) => setUnidad_medida(e.target.value)}
                 />
               </div>
               <div className="input-group mb-3">
@@ -195,13 +276,13 @@ export const Productos = () => {
                   <i className="fa-solid fa-gift"></i>
                 </span>
                 <input
-                  type="text"
+                  type="number"
                   id="medida"
                   className="form-control"
                   placeholder="Medida"
-                  value={medida}
-                  onChange={(e) => setMedida(e.target.value)}
-                />
+                  value={(medida)}
+                  onChange={(e) => (setMedida(parseFloat(e.target.value)))}
+                />  
               </div>
               <div className="input-group mb-3">
                 <span className="input-group-text">
@@ -216,9 +297,24 @@ export const Productos = () => {
                   onChange={(e) => setTipo(e.target.value)}
                 />
               </div>
-              <div className="" d-grid col-6 mx-auto>
+              <div className="input-group mb-3">
+                <span className="input-group-text">
+                  <i className="fa-solid fa-gift"></i>
+                </span>
+                <input
+                  type="text"
+                  id="precio"
+                  className="form-control"
+                  placeholder="Precio"
+                  value={precio}
+                  onChange={(e) => setPrecio(parseFloat(e.target.value))}
+                />
+              </div>
+              <div className="d-grid col-6 mx-auto">
                 <button className="btn btn-success">
-                  <i className="fa-solid fa-floppy-disk">Guardar</i>
+                  <i className="fa-solid fa-floppy-disk" onClick={(e)=>save(e)}>
+                    Guardar
+                  </i>
                 </button>
               </div>
             </div>
