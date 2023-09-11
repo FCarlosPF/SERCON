@@ -143,7 +143,7 @@ export const Productos = () => {
 
   return (
     <>
-      <div className="title">Insumos</div>
+      <div className="title">Productos</div>
       <button
         onClick={() => openModal(1,0, "", "", "", 0, "",0)}
         type="button"
@@ -163,6 +163,7 @@ export const Productos = () => {
               <TableCell align="right">Unidad_Medida&nbsp;(g)</TableCell>
               <TableCell align="right">Medida&nbsp;(g)</TableCell>
               <TableCell align="right">Tipo&nbsp;(g)</TableCell>
+              <TableCell align="right">Precio&nbsp;(g)</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -179,6 +180,7 @@ export const Productos = () => {
                 <TableCell align="right">{row.unidad_medida}</TableCell>
                 <TableCell align="right">{row.medida}</TableCell>
                 <TableCell align="right">{row.tipo}</TableCell>
+                <TableCell align="right">{row.precio}</TableCell>
                 <TableCell align="right">
                   <Button variant="outlined" color="error" onClick={()=>{eliminar(row.producto_id)}}>
                     Eliminar

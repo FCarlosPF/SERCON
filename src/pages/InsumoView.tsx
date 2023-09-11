@@ -9,10 +9,7 @@ import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
 import "../css/insumos.css";
 import { useState, useEffect } from "react";
-import { show_alerta } from "../functions/alert";
-import axios from "axios";
 import InsumoGateway from "../gateway/InsumoGateway";
-import { error } from "console";
 import { useParams } from "react-router-dom";
 
 
@@ -26,7 +23,6 @@ export const Insumos = () => {
   const [tipo, setTipo] = useState("");
   const [operation, setOperation] = useState(1);
   const [title, setTitle] = useState("");
-  const {id} = useParams()
   const insumoGateway = new InsumoGateway();
 
   interface Insumo {
