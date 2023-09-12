@@ -219,6 +219,7 @@ export const Insumos = () => {
             </div>
             <div className="modal-body">
               <input type="hidden" id="id" value={insumo_id} onChange={(e) => setInsumo_id(parseInt(e.target.value))} />
+              Nombre:
               <div className="input-group mb-3">
                 <span className="input-group-text">
                   <i className="fa-solid fa-gift"></i>
@@ -232,6 +233,7 @@ export const Insumos = () => {
                   onChange={(e) => setNombre(e.target.value)}
                 />
               </div>
+              Descripcion:  
               <div className="input-group mb-3">
                 <span className="input-group-text">
                   <i className="fa-solid fa-gift"></i>
@@ -245,6 +247,7 @@ export const Insumos = () => {
                   onChange={(e) => setDescripcion(e.target.value)}
                 />
               </div>
+              Unidad Medida:
               <div className="input-group mb-3">
                 <span className="input-group-text">
                   <i className="fa-solid fa-gift"></i>
@@ -258,6 +261,7 @@ export const Insumos = () => {
                   onChange={(e) => setUnidad_medida(e.target.value)}
                 />
               </div>
+              Medida:
               <div className="input-group mb-3">
                 <span className="input-group-text">
                   <i className="fa-solid fa-gift"></i>
@@ -271,6 +275,7 @@ export const Insumos = () => {
                   onChange={(e) => (setMedida(parseFloat(e.target.value)))}
                 />  
               </div>
+              Tipo:
               <div className="input-group mb-3">
                 <span className="input-group-text">
                   <i className="fa-solid fa-gift"></i>

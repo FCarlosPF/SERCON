@@ -233,6 +233,7 @@ export const Productos = () => {
             </div>
             <div className="modal-body">
               <input type="hidden" id="id" value={producto_id} onChange={(e) => setProducto_id(parseInt(e.target.value))} />
+              Nombre:
               <div className="input-group mb-3">
                 <span className="input-group-text">
                   <i className="fa-solid fa-gift"></i>
@@ -246,6 +247,7 @@ export const Productos = () => {
                   onChange={(e) => setNombre(e.target.value)}
                 />
               </div>
+              Descripcion:
               <div className="input-group mb-3">
                 <span className="input-group-text">
                   <i className="fa-solid fa-gift"></i>
@@ -259,6 +261,7 @@ export const Productos = () => {
                   onChange={(e) => setDescripcion(e.target.value)}
                 />
               </div>
+              Unidad Medida:
               <div className="input-group mb-3">
                 <span className="input-group-text">
                   <i className="fa-solid fa-gift"></i>
@@ -272,6 +275,7 @@ export const Productos = () => {
                   onChange={(e) => setUnidad_medida(e.target.value)}
                 />
               </div>
+              Medida:
               <div className="input-group mb-3">
                 <span className="input-group-text">
                   <i className="fa-solid fa-gift"></i>
@@ -285,6 +289,7 @@ export const Productos = () => {
                   onChange={(e) => (setMedida(parseFloat(e.target.value)))}
                 />  
               </div>
+              Tipo:
               <div className="input-group mb-3">
                 <span className="input-group-text">
                   <i className="fa-solid fa-gift"></i>
@@ -298,6 +303,7 @@ export const Productos = () => {
                   onChange={(e) => setTipo(e.target.value)}
                 />
               </div>
+              Precio:
               <div className="input-group mb-3">
                 <span className="input-group-text">
                   <i className="fa-solid fa-gift"></i>

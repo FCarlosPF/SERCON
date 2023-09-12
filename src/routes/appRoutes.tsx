@@ -26,3 +26,4 @@ const appRoutes: RouteType[] = [
 ];
 
 export default appRoutes;
+
