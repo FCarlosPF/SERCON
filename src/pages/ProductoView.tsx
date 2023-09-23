@@ -7,13 +7,14 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
-import "../css/insumos.css";
+import "../css/productos.css";
 import { useState, useEffect } from "react";
 import { show_alerta } from "../functions/alert";
 import axios from "axios";
 import InsumoGateway from "../gateway/InsumoGateway";
 import { error } from "console";
 import ProductoGateway from "../gateway/ProductosGateway";
+import Swal from "sweetalert2";
 
 
 export const Productos = () => {
@@ -27,7 +28,11 @@ export const Productos = () => {
   const [precio, setPrecio] = useState(0);
   const [operation, setOperation] = useState(1);
   const [title, setTitle] = useState("");
-
+  const [errorName, setErrorName] = useState('');
+  const [errorDescripcion, setErrorDescripcion] = useState('');
+  const [errorUnidad, setErrorUnidad] = useState('');
+  const [errorTipo, setErrorTipo] = useState('');
+  const [errorPrecio, setErrorPrecio] = useState('');
   const productoGateway = new ProductoGateway();
 
   interface Producto {
@@ -47,30 +52,6 @@ export const Productos = () => {
     })
     .catch((error) => {});
 
-  /* const findById = (id: number) =>{
-    insumoGateway.findById(id)
-  .then((insumo) => {
-    setInsumo(insumo)
-  })
-  .catch((error) => {
-  });
-  }
-
-  const remove = (id: number) =>{
-    insumoGateway.remove(id)
-  .then((insumo) => {
-  })
-  .catch((error) => {
-  });
-  }
-
-  const update = (id: number,argumentosActualizados : Insumo) =>{
-    insumoGateway.update(id, argumentosActualizados )
-  .then((insumo) => {
-  })
-  .catch((error) => {
-  });
-  } */
 
   const openModal = (
     op: number,
@@ -138,11 +119,98 @@ export const Productos = () => {
     })
   }
 
+  const showAlert= ()=>{
+    Swal.fire('Alerta de Stockout o Sobreabastecimiento')
+  }
+  const handleNombreChange = (e : any) => {
+    const nuevoNombre = e.target.value;
+    const regex = /^[a-zA-Z]+$/;
+
+    // Validación básica: Asegurarse de que el campo no esté vacío.
+    if (nuevoNombre.trim() === '') {
+      setErrorName('El nombre no puede estar vacío');
+    } else if (!regex.test(nuevoNombre)) {
+      setErrorName('El nombre solo debe contener letras');
+    }
+    else {
+      setErrorName(''); // Limpiar el mensaje de error si la entrada es válida.
+      setNombre(nuevoNombre); // Actualizar el valor del campo.
+      console.log(nombre)
+    }
+  };
+
+  const handleDescripcionChange = (e : any) => {
+    const nuevoDescripcion = e.target.value;
+    const regex = /^[a-zA-Z]+$/;
+
+    // Validación básica: Asegurarse de que el campo no esté vacío.
+    if (nuevoDescripcion.trim() === '') {
+      setErrorDescripcion('La descripcion no puede estar vacío');
+    } else if (!regex.test(nuevoDescripcion)) {
+      setErrorDescripcion('Solo debe contener letras');
+    }else {
+      setErrorDescripcion(''); // Limpiar el mensaje de error si la entrada es válida.
+      setDescripcion(nuevoDescripcion); // Actualizar el valor del campo.
+      console.log(descripcion)
+    }
+  };
+
+  const handleUnidadChange = (e : any) => {
+    const nuevoUnidad = e.target.value;
+
+    // Validación básica: Asegurarse de que el campo no esté vacío.
+    if (nuevoUnidad.trim() === '') {
+      setErrorUnidad('La unidad no puede estar vacío');
+    } else {
+      setErrorUnidad(''); // Limpiar el mensaje de error si la entrada es válida.
+      setUnidad_medida(nuevoUnidad); // Actualizar el valor del campo.
+      console.log(unidad_medida)
+    }
+  };
 
 
+  const handleTipoChange = (e : any) => {
+    const nuevoTipo = e.target.value;
+    const regex = /^[a-zA-Z]+$/;
+
+    // Validación básica: Asegurarse de que el campo no esté vacío.
+    if (nuevoTipo.trim() === '') {
+      setErrorTipo('El tipo no puede estar vacío');
+    } else if (!regex.test(nuevoTipo)) {
+      setErrorTipo('Solo debe contener letras');
+    }else {
+      setErrorTipo(''); // Limpiar el mensaje de error si la entrada es válida.
+      setTipo(nuevoTipo); // Actualizar el valor del campo.
+      console.log(tipo)
+    }
+  };
+
+  const handlePrecioChange = (e : any) => {
+    const nuevoPrecio = e.target.value;
+    const regexPrecio = /^\d+(\.\d{1,2})?$/;
+  
+    // Validación básica: Asegurarse de que el campo no esté vacío.
+    if (nuevoPrecio.trim() === '') {
+      setErrorPrecio('El precio no puede estar vacío');
+    } else if (!regexPrecio.test(nuevoPrecio)) {
+      setErrorPrecio('Formato de precio no válido');
+    } else {
+      setErrorPrecio(''); // Limpiar el mensaje de error si la entrada es válida.
+      setPrecio(nuevoPrecio); // Actualizar el valor del campo.
+    }
+  };
+  
+  const formSubmit = (e:any)=>{
+    e.preventDefault()
+  }
   return (
     <>
+    <div className="producto-title">
       <div className="title">Productos</div>
+      <button className="campana-button" onClick={showAlert}>
+          <i className="fa-solid fa-bell campana"></i>
+        </button>
+    </div>
       <button
         onClick={() => openModal(1,0, "", "", "", 0, "",0)}
         type="button"
@@ -160,7 +228,6 @@ export const Productos = () => {
               <TableCell align="right">Nombre</TableCell>
               <TableCell align="right">Descripción&nbsp;(g)</TableCell>
               <TableCell align="right">Unidad_Medida&nbsp;(g)</TableCell>
-              <TableCell align="right">Medida&nbsp;(g)</TableCell>
               <TableCell align="right">Tipo&nbsp;(g)</TableCell>
               <TableCell align="right">Precio&nbsp;(g)</TableCell>
             </TableRow>
@@ -177,7 +244,6 @@ export const Productos = () => {
                 <TableCell align="right">{row.nombre}</TableCell>
                 <TableCell align="right">{row.descripcion}</TableCell>
                 <TableCell align="right">{row.unidad_medida}</TableCell>
-                <TableCell align="right">{row.medida}</TableCell>
                 <TableCell align="right">{row.tipo}</TableCell>
                 <TableCell align="right">{row.precio}</TableCell>
                 <TableCell align="right">
@@ -212,6 +278,7 @@ export const Productos = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <form onSubmit={formSubmit}>
       <div className="modal-body">
         <input type="hidden" id="id" />
         <div className="input-group mb-3">
@@ -244,8 +311,9 @@ export const Productos = () => {
                   className="form-control"
                   placeholder="Nombre"
                   value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
+                  onChange={handleNombreChange}
                 />
+              {errorName && <p className="error-message">{errorName}</p>}   
               </div>
               Descripcion:
               <div className="input-group mb-3">
@@ -258,8 +326,9 @@ export const Productos = () => {
                   className="form-control"
                   placeholder="Descripcion"
                   value={descripcion}
-                  onChange={(e) => setDescripcion(e.target.value)}
+                  onChange={handleDescripcionChange}
                 />
+          {errorDescripcion&& <p className="error-message">{errorDescripcion}</p>}   
               </div>
               Unidad Medida:
               <div className="input-group mb-3">
@@ -272,23 +341,11 @@ export const Productos = () => {
                   className="form-control"
                   placeholder="Unidad"
                   value={unidad_medida}
-                  onChange={(e) => setUnidad_medida(e.target.value)}
+                  onChange={handleUnidadChange}
                 />
+            {errorUnidad && <p className="error-message">{errorUnidad}</p>}   
               </div>
-              Medida:
-              <div className="input-group mb-3">
-                <span className="input-group-text">
-                  <i className="fa-solid fa-gift"></i>
-                </span>
-                <input
-                  type="number"
-                  id="medida"
-                  className="form-control"
-                  placeholder="Medida"
-                  value={(medida)}
-                  onChange={(e) => (setMedida(parseFloat(e.target.value)))}
-                />  
-              </div>
+             
               Tipo:
               <div className="input-group mb-3">
                 <span className="input-group-text">
@@ -300,8 +357,10 @@ export const Productos = () => {
                   className="form-control"
                   placeholder="Tipo"
                   value={tipo}
-                  onChange={(e) => setTipo(e.target.value)}
+                  onChange={handleTipoChange}
                 />
+            {errorTipo && <p className="error-message">{errorTipo}</p>}
+
               </div>
               Precio:
               <div className="input-group mb-3">
@@ -309,13 +368,14 @@ export const Productos = () => {
                   <i className="fa-solid fa-gift"></i>
                 </span>
                 <input
-                  type="text"
+                  type="number"
                   id="precio"
                   className="form-control"
                   placeholder="Precio"
                   value={precio}
-                  onChange={(e) => setPrecio(parseFloat(e.target.value))}
+                  onChange={handlePrecioChange}
                 />
+                {errorPrecio && <p className="error-message">{errorPrecio}</p>}
               </div>
               <div className="d-grid col-6 mx-auto">
                 <button className="btn btn-success">
@@ -337,6 +397,7 @@ export const Productos = () => {
           </div>
         </div>
       </div>
+      </form>
     </>
   );
 };

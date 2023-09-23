@@ -80,3 +80,9 @@
   .cancel-button:hover {
     background-color: #ff0000;
   }
+
+  .producto-title{
+    display: flex;
+    justify-content: center;
+
+  }

@@ -80,3 +80,24 @@
   .cancel-button:hover {
     background-color: #ff0000;
   }
+
+  .insumo-title{
+    display: flex;
+    justify-content: center;
+  }
+  
+  .campana{
+    float: left;
+    font-size: 2rem;
+
+  }
+
+  .campana-button{
+    border-color: white;
+  }
+
+  .error-message{
+    font-weight: bold;
+    color: red;
+    
+  }
