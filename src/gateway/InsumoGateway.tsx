@@ -7,7 +7,7 @@ interface Insumo {
   nombre: string;
   descripcion: string;
   unidad_medida: string;
-  medida: number;
+  cantidad: number;
   tipo: string;
 }
 

@@ -18,14 +18,14 @@ export const Insumos = () => {
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [unidad_medida, setUnidad_medida] = useState("");
-  const [medida, setMedida] = useState(0);
+  const [cantidad, setCantidad] = useState(0);
   const [tipo, setTipo] = useState("");
   const [title, setTitle] = useState("");
   const insumoGateway = new InsumoGateway();
   const [errorName, setErrorName] = useState('');
   const [errorDescripcion, setErrorDescripcion] = useState('');
   const [errorUnidad, setErrorUnidad] = useState('');
-  const [errorMedida, setErrorMedida] = useState('');
+  const [errorCantidad, setErrorCantidad] = useState('');
   const [errorTipo, setErrorTipo] = useState('');
 
 
@@ -34,7 +34,7 @@ export const Insumos = () => {
     nombre: string;
     descripcion: string;
     unidad_medida: string;
-    medida: number;
+    cantidad: number;
     tipo: string;
   }
 
@@ -53,14 +53,14 @@ export const Insumos = () => {
     nombre: string,
     descripcion: string,
     unidad_medida: string,
-    medida: number,
+    cantidad: number,
     tipo: string
   ) => {
     setInsumo_id(0);
     setNombre("");
     setDescripcion("");
     setUnidad_medida("");
-    setMedida(0);
+    setCantidad(0);
     setTipo("");
     if (op === 1) {
       setTitle("Registrar Insumo");
@@ -70,7 +70,7 @@ export const Insumos = () => {
       setNombre(nombre);
       setDescripcion(descripcion);
       setUnidad_medida(unidad_medida);
-      setMedida(medida);
+      setCantidad(cantidad);
       setTipo(tipo);
     }
   };
@@ -78,7 +78,7 @@ export const Insumos = () => {
   const save = (e: any) => {
     e.preventDefault();
     const id = insumo_id;
-    const insumo: Insumo = { nombre, descripcion, unidad_medida, medida, tipo };
+    const insumo: Insumo = { nombre, descripcion, unidad_medida, cantidad, tipo };
 
     if (id === 0) {
       insumoGateway
@@ -165,6 +165,21 @@ export const Insumos = () => {
     }
   };
 
+  const handleCantidadChange = (e : any) => {
+    const nuevoCantidad = e.target.value;
+    const regexPrecio = /^\d+(\.\d{1,2})?$/;
+  
+    // Validación básica: Asegurarse de que el campo no esté vacío.
+    if (nuevoCantidad.trim() === '') {
+      setErrorCantidad('El precio no puede estar vacío');
+    } else if (!regexPrecio.test(nuevoCantidad)) {
+      setErrorCantidad('Formato de precio no válido');
+    } else {
+      setErrorCantidad(''); // Limpiar el mensaje de error si la entrada es válida.
+      setCantidad(nuevoCantidad); // Actualizar el valor del campo.
+    }
+  };
+
   const handleTipoChange = (e : any) => {
     const nuevoTipo = e.target.value;
     const regex = /^[a-zA-Z]+$/;
@@ -183,6 +198,11 @@ export const Insumos = () => {
 
   const formSubmit = (e:any)=>{
     e.preventDefault()
+    if (nombre.trim() === '' || descripcion.trim() === '' || unidad_medida.trim() === '' || tipo.trim() === '' ) {
+      // Si algún campo requerido está vacío, muestra un mensaje de error o realiza alguna acción adecuada.
+      alert('Por favor, complete todos los campos obligatorios.');
+      return;
+    }
   }
   return (
     <>
@@ -209,7 +229,8 @@ export const Insumos = () => {
               <TableCell align="right">Nombre</TableCell>
               <TableCell align="right">Descripción&nbsp;(g)</TableCell>
               <TableCell align="right">Unidad_Medida&nbsp;(g)</TableCell>
-                <TableCell align="right">Tipo&nbsp;(g)</TableCell>
+              <TableCell align="right">Cantidad&nbsp;(g)</TableCell>
+              <TableCell align="right">Tipo&nbsp;(g)</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -224,6 +245,7 @@ export const Insumos = () => {
                 <TableCell align="right">{row.nombre}</TableCell>
                 <TableCell align="right">{row.descripcion}</TableCell>
                 <TableCell align="right">{row.unidad_medida}</TableCell>
+                <TableCell align="right">{row.cantidad}</TableCell>
                 <TableCell align="right">{row.tipo}</TableCell>
                 <TableCell align="right">
                   <Button
@@ -246,7 +268,7 @@ export const Insumos = () => {
                         row.nombre,
                         row.descripcion,
                         row.unidad_medida,
-                        row.medida,
+                        row.cantidad,
                         row.tipo
                       )
                     }
@@ -348,7 +370,21 @@ export const Insumos = () => {
                 </>
                 )}
                 </div>
-
+                Cantidad:
+              <div className="input-group mb-3">
+                <span className="input-group-text">
+                  <i className="fa-solid fa-gift"></i>
+                </span>
+                <input
+                  type="number"
+                  id="cantidad"
+                  className="form-control"
+                  placeholder="Cantidad"
+                  value={cantidad}
+                  onChange={handleCantidadChange}
+                />
+                {errorCantidad && <p className="error-message">{errorCantidad}</p>}
+              </div>
                 Tipo:
                 <div className="input-group mb-3">
                   <span className="input-group-text">

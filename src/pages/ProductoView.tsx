@@ -23,7 +23,7 @@ export const Productos = () => {
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [unidad_medida, setUnidad_medida] = useState("");
-  const [medida, setMedida] = useState(0);
+  const [cantidad, setCantidad] = useState(0);
   const [tipo, setTipo] = useState("");
   const [precio, setPrecio] = useState(0);
   const [operation, setOperation] = useState(1);
@@ -33,6 +33,7 @@ export const Productos = () => {
   const [errorUnidad, setErrorUnidad] = useState('');
   const [errorTipo, setErrorTipo] = useState('');
   const [errorPrecio, setErrorPrecio] = useState('');
+  const [errorCantidad, setErrorCantidad] = useState('');
   const productoGateway = new ProductoGateway();
 
   interface Producto {
@@ -40,7 +41,7 @@ export const Productos = () => {
     nombre: string;
     descripcion: string;
     unidad_medida: string;
-    medida: number;
+    cantidad: number;
     tipo: string;
     precio: number
   }
@@ -59,7 +60,7 @@ export const Productos = () => {
     nombre: string,
     descripcion: string,
     unidad_medida: string,
-    medida: number,
+    cantidad: number,
     tipo: string,
     precio : number
   ) => {
@@ -67,7 +68,7 @@ export const Productos = () => {
     setNombre("");
     setDescripcion("");
     setUnidad_medida("");
-    setMedida(0);
+    setCantidad(0);
     setTipo("");
     setPrecio(0);
     if (op === 1) {
@@ -78,7 +79,7 @@ export const Productos = () => {
       setNombre(nombre);
       setDescripcion(descripcion);
       setUnidad_medida(unidad_medida);
-      setMedida(medida);
+      setCantidad(cantidad);
       setTipo(tipo);
       setPrecio(precio);
 
@@ -88,7 +89,7 @@ export const Productos = () => {
   const save = (e: any) =>{
     e.preventDefault();
     const id = producto_id;
-    const producto : Producto = { nombre, descripcion, unidad_medida, medida, tipo,precio };
+    const producto : Producto = { nombre, descripcion, unidad_medida, cantidad, tipo,precio };
 
     if(id===0){
       productoGateway.create(producto).then((response)=>{
@@ -168,6 +169,20 @@ export const Productos = () => {
     }
   };
 
+  const handleCantidadChange = (e : any) => {
+    const nuevoCantidad = e.target.value;
+    const regexPrecio = /^\d+(\.\d{1,2})?$/;
+  
+    // Validación básica: Asegurarse de que el campo no esté vacío.
+    if (nuevoCantidad.trim() === '') {
+      setErrorCantidad('El precio no puede estar vacío');
+    } else if (!regexPrecio.test(nuevoCantidad)) {
+      setErrorCantidad('Formato de precio no válido');
+    } else {
+      setErrorCantidad(''); // Limpiar el mensaje de error si la entrada es válida.
+      setCantidad(nuevoCantidad); // Actualizar el valor del campo.
+    }
+  };
 
   const handleTipoChange = (e : any) => {
     const nuevoTipo = e.target.value;
@@ -202,6 +217,11 @@ export const Productos = () => {
   
   const formSubmit = (e:any)=>{
     e.preventDefault()
+    if (nombre.trim() === '' || descripcion.trim() === '' || unidad_medida.trim() === '' || tipo.trim() === '' || precio === 0) {
+      // Si algún campo requerido está vacío, muestra un mensaje de error o realiza alguna acción adecuada.
+      alert('Por favor, complete todos los campos obligatorios.');
+      return;
+    }
   }
   return (
     <>
@@ -228,6 +248,7 @@ export const Productos = () => {
               <TableCell align="right">Nombre</TableCell>
               <TableCell align="right">Descripción&nbsp;(g)</TableCell>
               <TableCell align="right">Unidad_Medida&nbsp;(g)</TableCell>
+              <TableCell align="right">Cantidad&nbsp;(g)</TableCell>
               <TableCell align="right">Tipo&nbsp;(g)</TableCell>
               <TableCell align="right">Precio&nbsp;(g)</TableCell>
             </TableRow>
@@ -244,6 +265,7 @@ export const Productos = () => {
                 <TableCell align="right">{row.nombre}</TableCell>
                 <TableCell align="right">{row.descripcion}</TableCell>
                 <TableCell align="right">{row.unidad_medida}</TableCell>
+                <TableCell align="right">{row.cantidad}</TableCell>
                 <TableCell align="right">{row.tipo}</TableCell>
                 <TableCell align="right">{row.precio}</TableCell>
                 <TableCell align="right">
@@ -260,7 +282,7 @@ export const Productos = () => {
                         row.nombre,
                         row.descripcion,
                         row.unidad_medida,
-                        row.medida,
+                        row.cantidad,
                         row.tipo,
                         row.precio
                       )
@@ -345,7 +367,21 @@ export const Productos = () => {
                 />
             {errorUnidad && <p className="error-message">{errorUnidad}</p>}   
               </div>
-             
+              Cantidad
+              <div className="input-group mb-3">
+                <span className="input-group-text">
+                  <i className="fa-solid fa-gift"></i>
+                </span>
+                <input
+                  type="number"
+                  id="cantidad"
+                  className="form-control"
+                  placeholder="Cantidad"
+                  value={cantidad}
+                  onChange={handleCantidadChange}
+                />
+                {errorCantidad && <p className="error-message">{errorCantidad}</p>}
+              </div>
               Tipo:
               <div className="input-group mb-3">
                 <span className="input-group-text">

@@ -7,7 +7,7 @@ interface Producto {
   nombre: string;
   descripcion: string;
   unidad_medida: string;
-  medida: number;
+  cantidad: number;
   tipo: string;
   precio: number
 }
