@@ -7,10 +7,10 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
 import "../css/insumos.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InsumoGateway from "../gateway/InsumoGateway";
-import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
+import ReporteGateway from "../gateway/ReporteGateway";
 
 export const Insumos = () => {
   const [insumos, setInsumos] = useState<Insumo[]>([]);
@@ -22,6 +22,7 @@ export const Insumos = () => {
   const [tipo, setTipo] = useState("");
   const [title, setTitle] = useState("");
   const insumoGateway = new InsumoGateway();
+  const reporteGateway = new ReporteGateway();
   const [errorName, setErrorName] = useState('');
   const [errorDescripcion, setErrorDescripcion] = useState('');
   const [errorUnidad, setErrorUnidad] = useState('');
@@ -38,14 +39,18 @@ export const Insumos = () => {
     tipo: string;
   }
 
-  insumoGateway
-    .findAll()
-    .then((insumos) => {
-      setInsumos(insumos);
+  const handleReport = ()=>{
+    reporteGateway
+    .generateReportInsumo()
+    .then((response) => {
+      console.log(response);
     })
     .catch((error) => {
-      console.log(error);
+      console.log(error.response.data);
     });
+
+   }
+
 
   const openModal = (
     op: number,
@@ -78,7 +83,7 @@ export const Insumos = () => {
   const save = (e: any) => {
     e.preventDefault();
     const id = insumo_id;
-    const insumo: Insumo = { nombre, descripcion, unidad_medida, cantidad, tipo };
+    const insumo: Insumo = { insumo_id, nombre, descripcion, unidad_medida, cantidad, tipo };
 
     if (id === 0) {
       insumoGateway
@@ -89,9 +94,10 @@ export const Insumos = () => {
         .catch((error) => {
           console.log(error.response.data);
         });
+        
     } else if (id !== 0) {
       insumoGateway
-        .update(id, insumo)
+        .update(insumo)
         .then((response) => {
           console.log(response);
         })
@@ -99,7 +105,7 @@ export const Insumos = () => {
           console.log(error.response.data);
         });
     }
-
+    window.location.reload();
     console.log(id);
   };
 
@@ -112,6 +118,8 @@ export const Insumos = () => {
       .catch((error) => {
         console.log(error.response.data);
       });
+
+      window.location.reload();
   };
 
 
@@ -132,7 +140,8 @@ export const Insumos = () => {
     }else {
       setErrorName(''); // Limpiar el mensaje de error si la entrada es válida.
       setNombre(nuevoNombre); // Actualizar el valor del campo.
-      console.log(nombre)
+      console.log(nombre);
+      console.log(insumo_id)
     }
   };
 
@@ -180,6 +189,24 @@ export const Insumos = () => {
     }
   };
 
+
+  
+
+  
+    useEffect(()=>{
+      insumoGateway
+      .findAll()
+      .then((insumos) => {
+        setInsumos(insumos);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    },[])
+    
+
+ 
+
   const handleTipoChange = (e : any) => {
     const nuevoTipo = e.target.value;
     const regex = /^[a-zA-Z]+$/;
@@ -200,14 +227,14 @@ export const Insumos = () => {
     e.preventDefault()
     if (nombre.trim() === '' || descripcion.trim() === '' || unidad_medida.trim() === '' || tipo.trim() === '' ) {
       // Si algún campo requerido está vacío, muestra un mensaje de error o realiza alguna acción adecuada.
-      alert('Por favor, complete todos los campos obligatorios.');
+      Swal.fire('Debe rellenar el campo')
       return;
     }
   }
   return (
     <>
       <div className="insumo-title">
-        <div className="title">Insumos </div>
+        <div className="title">Insumos</div>
         <button className="campana-button" onClick={showAlert}>
           <i className="fa-solid fa-bell campana"></i>
         </button>
@@ -285,13 +312,15 @@ export const Insumos = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Button variant="contained" onClick={handleReport}>Reporte</Button>
+
       <div className="modal-body">
         <input type="hidden" id="id" />
         <div className="input-group mb-3">
           <span className="input-group-text"></span>
         </div>
       </div>
-
       <form onSubmit={formSubmit}>
         <div id="modalInsumos" className="modal fade" aria-hidden="true">
           <div className="modal-dialog">
@@ -325,13 +354,12 @@ export const Insumos = () => {
                     value={nombre}
                     onChange={handleNombreChange}
                   />
+                </div>
                 {errorName && (
                 <>
                 <p className="error-message">{errorName}</p>
                 </>
                 )}
-
-                </div>
                 Descripcion:
                 <div className="input-group mb-3">
                   <span className="input-group-text">
@@ -345,12 +373,12 @@ export const Insumos = () => {
                     value={descripcion}
                     onChange={handleDescripcionChange}
                   />
-                  {errorDescripcion && (
+                </div>
+                {errorDescripcion && (
                 <>
                 <p className="error-message">{errorDescripcion}</p>
                 </>
                 )}
-                </div>
                 Unidad Medida:
                 <div className="input-group mb-3">
                   <span className="input-group-text">
@@ -364,27 +392,27 @@ export const Insumos = () => {
                     value={unidad_medida}
                     onChange={handleUnidadChange}
                   />
-                   {errorUnidad && (
+                </div>
+                {errorUnidad && (
                 <>
                 <p className="error-message">{errorUnidad}</p>
                 </>
                 )}
-                </div>
                 Cantidad:
               <div className="input-group mb-3">
                 <span className="input-group-text">
                   <i className="fa-solid fa-gift"></i>
                 </span>
                 <input
-                  type="number"
+                  type="text"
                   id="cantidad"
                   className="form-control"
                   placeholder="Cantidad"
                   value={cantidad}
                   onChange={handleCantidadChange}
                 />
-                {errorCantidad && <p className="error-message">{errorCantidad}</p>}
               </div>
+              {errorCantidad && <p className="error-message">{errorCantidad}</p>}
                 Tipo:
                 <div className="input-group mb-3">
                   <span className="input-group-text">
@@ -398,8 +426,8 @@ export const Insumos = () => {
                     value={tipo}
                     onChange={handleTipoChange}
                   />
-                  {errorTipo && <p className="error-message">{errorTipo}</p>}
                 </div>
+                {errorTipo && <p className="error-message">{errorTipo}</p>}
                 <div className="d-grid col-6 mx-auto">
                   <button className="btn btn-success">
                     <i

@@ -15,6 +15,7 @@ import InsumoGateway from "../gateway/InsumoGateway";
 import { error } from "console";
 import ProductoGateway from "../gateway/ProductosGateway";
 import Swal from "sweetalert2";
+import ReporteGateway from "../gateway/ReporteGateway";
 
 
 export const Productos = () => {
@@ -35,6 +36,7 @@ export const Productos = () => {
   const [errorPrecio, setErrorPrecio] = useState('');
   const [errorCantidad, setErrorCantidad] = useState('');
   const productoGateway = new ProductoGateway();
+  const reporteGateway = new ReporteGateway();
 
   interface Producto {
     producto_id?: number;
@@ -46,12 +48,29 @@ export const Productos = () => {
     precio: number
   }
 
-  productoGateway
+  useEffect(()=>{
+    productoGateway
     .findAll()
     .then((productos) => {
       setProductos(productos);
     })
-    .catch((error) => {});
+    .catch((error) => {
+      return error
+    });
+  },[])
+
+
+  const handleReport = ()=>{
+    reporteGateway
+    .generateReportProducto()
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(error.response.data);
+    });
+
+   }
 
 
   const openModal = (
@@ -89,7 +108,7 @@ export const Productos = () => {
   const save = (e: any) =>{
     e.preventDefault();
     const id = producto_id;
-    const producto : Producto = { nombre, descripcion, unidad_medida, cantidad, tipo,precio };
+    const producto : Producto = {producto_id, nombre, descripcion, unidad_medida, cantidad, tipo,precio };
 
     if(id===0){
       productoGateway.create(producto).then((response)=>{
@@ -98,26 +117,26 @@ export const Productos = () => {
         console.log(error.response.data)
       })
     }else if(id!==0){
-      productoGateway.update(id,producto).then((response)=>{
+      productoGateway.update(producto).then((response)=>{
         console.log(response)
       }).catch(error =>{
         console.log(error.response.data)
       })
     }
+    window.location.reload();
 
     console.log(id)
   }
 
-
- 
   const eliminar = (nuevoId : number) =>{
     
-   
+
     productoGateway.remove(nuevoId).then(()=>{
       console.log(producto_id)
     }).catch(error =>{
       console.log(error.response.data)
     })
+    window.location.reload()
   }
 
   const showAlert= ()=>{
@@ -219,7 +238,7 @@ export const Productos = () => {
     e.preventDefault()
     if (nombre.trim() === '' || descripcion.trim() === '' || unidad_medida.trim() === '' || tipo.trim() === '' || precio === 0) {
       // Si algún campo requerido está vacío, muestra un mensaje de error o realiza alguna acción adecuada.
-      alert('Por favor, complete todos los campos obligatorios.');
+      Swal.fire('Debe rellenar los campos')
       return;
     }
   }
@@ -300,6 +319,10 @@ export const Productos = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Button variant="contained" onClick={handleReport}>Reporte</Button>
+
+
       <form onSubmit={formSubmit}>
       <div className="modal-body">
         <input type="hidden" id="id" />
@@ -307,6 +330,8 @@ export const Productos = () => {
           <span className="input-group-text"></span>
         </div>
       </div>
+
+
 
       <div id="modalInsumos" className="modal fade" aria-hidden="true">
         <div className="modal-dialog">
@@ -335,8 +360,8 @@ export const Productos = () => {
                   value={nombre}
                   onChange={handleNombreChange}
                 />
-              {errorName && <p className="error-message">{errorName}</p>}   
               </div>
+              {errorName && <p className="error-message">{errorName}</p>}   
               Descripcion:
               <div className="input-group mb-3">
                 <span className="input-group-text">
@@ -350,8 +375,8 @@ export const Productos = () => {
                   value={descripcion}
                   onChange={handleDescripcionChange}
                 />
-          {errorDescripcion&& <p className="error-message">{errorDescripcion}</p>}   
               </div>
+              {errorDescripcion&& <p className="error-message">{errorDescripcion}</p>}   
               Unidad Medida:
               <div className="input-group mb-3">
                 <span className="input-group-text">
@@ -365,8 +390,8 @@ export const Productos = () => {
                   value={unidad_medida}
                   onChange={handleUnidadChange}
                 />
-            {errorUnidad && <p className="error-message">{errorUnidad}</p>}   
               </div>
+              {errorUnidad && <p className="error-message">{errorUnidad}</p>}   
               Cantidad
               <div className="input-group mb-3">
                 <span className="input-group-text">
@@ -380,8 +405,8 @@ export const Productos = () => {
                   value={cantidad}
                   onChange={handleCantidadChange}
                 />
-                {errorCantidad && <p className="error-message">{errorCantidad}</p>}
               </div>
+              {errorCantidad && <p className="error-message">{errorCantidad}</p>}
               Tipo:
               <div className="input-group mb-3">
                 <span className="input-group-text">
@@ -395,9 +420,8 @@ export const Productos = () => {
                   value={tipo}
                   onChange={handleTipoChange}
                 />
-            {errorTipo && <p className="error-message">{errorTipo}</p>}
-
               </div>
+              {errorTipo && <p className="error-message">{errorTipo}</p>}
               Precio:
               <div className="input-group mb-3">
                 <span className="input-group-text">
@@ -411,8 +435,8 @@ export const Productos = () => {
                   value={precio}
                   onChange={handlePrecioChange}
                 />
-                {errorPrecio && <p className="error-message">{errorPrecio}</p>}
               </div>
+              {errorPrecio && <p className="error-message">{errorPrecio}</p>}
               <div className="d-grid col-6 mx-auto">
                 <button className="btn btn-success">
                   <i className="fa-solid fa-floppy-disk" onClick={(e)=>save(e)}>

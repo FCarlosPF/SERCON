@@ -39,9 +39,9 @@ class ProductoGateway {
     }
   }
 
-  async update(id: number, datosActualizados: Partial<Producto>): Promise<void> {
+  async update( datosActualizados: Partial<Producto>): Promise<void> {
     try {
-      await axios.put(`${baseURL}/update/${id}`, datosActualizados);
+      await axios.put(`${baseURL}/update`, datosActualizados);
     } catch (error) {
       throw error;
     }

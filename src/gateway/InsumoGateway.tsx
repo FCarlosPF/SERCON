@@ -38,9 +38,9 @@ class InsumoGateway {
     }
   }
 
-  async update(id: number, datosActualizados: Partial<Insumo>): Promise<void> {
+  async update(datosActualizados: Partial<Insumo>): Promise<void> {
     try {
-      await axios.put(`${baseURL}/update/${id}`, datosActualizados);
+      await axios.put(`${baseURL}/update`, datosActualizados);
     } catch (error) {
       throw error;
     }
