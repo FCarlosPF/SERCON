@@ -16,11 +16,11 @@ import { error } from "console";
 import ProductoGateway from "../gateway/ProductosGateway";
 import Swal from "sweetalert2";
 import ReporteGateway from "../gateway/ReporteGateway";
-
+import toast, { Toaster } from "react-hot-toast";
 
 export const Productos = () => {
   const [productos, setProductos] = useState<Producto[]>([]);
-  const [producto_id,setProducto_id] = useState(0)
+  const [producto_id, setProducto_id] = useState(0);
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [unidad_medida, setUnidad_medida] = useState("");
@@ -29,12 +29,12 @@ export const Productos = () => {
   const [precio, setPrecio] = useState(0);
   const [operation, setOperation] = useState(1);
   const [title, setTitle] = useState("");
-  const [errorName, setErrorName] = useState('');
-  const [errorDescripcion, setErrorDescripcion] = useState('');
-  const [errorUnidad, setErrorUnidad] = useState('');
-  const [errorTipo, setErrorTipo] = useState('');
-  const [errorPrecio, setErrorPrecio] = useState('');
-  const [errorCantidad, setErrorCantidad] = useState('');
+  const [errorName, setErrorName] = useState("");
+  const [errorDescripcion, setErrorDescripcion] = useState("");
+  const [errorUnidad, setErrorUnidad] = useState("");
+  const [errorTipo, setErrorTipo] = useState("");
+  const [errorPrecio, setErrorPrecio] = useState("");
+  const [errorCantidad, setErrorCantidad] = useState("");
   const productoGateway = new ProductoGateway();
   const reporteGateway = new ReporteGateway();
 
@@ -45,33 +45,30 @@ export const Productos = () => {
     unidad_medida: string;
     cantidad: number;
     tipo: string;
-    precio: number
+    precio: number;
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     productoGateway
-    .findAll()
-    .then((productos) => {
-      setProductos(productos);
-    })
-    .catch((error) => {
-      return error
-    });
-  },[])
+      .findAll()
+      .then((productos) => {
+        setProductos(productos);
+      })
+      .catch((error) => {
+        return error;
+      });
+  }, []);
 
-
-  const handleReport = ()=>{
+  const handleReport = () => {
     reporteGateway
-    .generateReportProducto()
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.log(error.response.data);
-    });
-
-   }
-
+      .generateReportProducto()
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
+  };
 
   const openModal = (
     op: number,
@@ -81,9 +78,9 @@ export const Productos = () => {
     unidad_medida: string,
     cantidad: number,
     tipo: string,
-    precio : number
+    precio: number
   ) => {
-    setProducto_id(0)
+    setProducto_id(0);
     setNombre("");
     setDescripcion("");
     setUnidad_medida("");
@@ -94,164 +91,183 @@ export const Productos = () => {
       setTitle("Registrar Producto");
     } else if (op === 2) {
       setTitle("Editar Producto");
-      setProducto_id(producto_id)
+      setProducto_id(producto_id);
       setNombre(nombre);
       setDescripcion(descripcion);
       setUnidad_medida(unidad_medida);
       setCantidad(cantidad);
       setTipo(tipo);
       setPrecio(precio);
-
     }
   };
 
-  const save = (e: any) =>{
+  const save = (e: any) => {
     e.preventDefault();
     const id = producto_id;
-    const producto : Producto = {producto_id, nombre, descripcion, unidad_medida, cantidad, tipo,precio };
+    const producto: Producto = {
+      producto_id,
+      nombre,
+      descripcion,
+      unidad_medida,
+      cantidad,
+      tipo,
+      precio,
+    };
 
-    if(id===0){
-      productoGateway.create(producto).then((response)=>{
-        console.log(response)
-      }).catch(error =>{
-        console.log(error.response.data)
-      })
-    }else if(id!==0){
-      productoGateway.update(producto).then((response)=>{
-        console.log(response)
-      }).catch(error =>{
-        console.log(error.response.data)
-      })
+    if (id === 0) {
+      productoGateway
+        .create(producto)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+        });
+    } else if (id !== 0) {
+      productoGateway
+        .update(producto)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+        });
     }
     window.location.reload();
 
-    console.log(id)
-  }
+    console.log(id);
+  };
 
-  const eliminar = (nuevoId : number) =>{
-    
+  const eliminar = (nuevoId: number) => {
+    productoGateway
+      .remove(nuevoId)
+      .then(() => {
+        console.log(producto_id);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
+    window.location.reload();
+  };
 
-    productoGateway.remove(nuevoId).then(()=>{
-      console.log(producto_id)
-    }).catch(error =>{
-      console.log(error.response.data)
-    })
-    window.location.reload()
-  }
-
-  const showAlert= ()=>{
-    Swal.fire('Alerta de Stockout o Sobreabastecimiento')
-  }
-  const handleNombreChange = (e : any) => {
+  const showAlert = () => {
+    Swal.fire("Alerta de Stockout o Sobreabastecimiento");
+  };
+  const handleNombreChange = (e: any) => {
     const nuevoNombre = e.target.value;
-    const regex = /^[a-zA-Z]+$/;
+    const regex = /^[a-zA-Z\s]+$/;
 
     // Validación básica: Asegurarse de que el campo no esté vacío.
-    if (nuevoNombre.trim() === '') {
-      setErrorName('El nombre no puede estar vacío');
+    if (nuevoNombre.trim() === "") {
+      setErrorName("El nombre no puede estar vacío");
     } else if (!regex.test(nuevoNombre)) {
-      setErrorName('El nombre solo debe contener letras');
-    }
-    else {
-      setErrorName(''); // Limpiar el mensaje de error si la entrada es válida.
+      setErrorName("El nombre solo debe contener letras");
+    } else {
+      setErrorName(""); // Limpiar el mensaje de error si la entrada es válida.
       setNombre(nuevoNombre); // Actualizar el valor del campo.
-      console.log(nombre)
+      console.log(nombre);
     }
   };
 
-  const handleDescripcionChange = (e : any) => {
+  const handleDescripcionChange = (e: any) => {
     const nuevoDescripcion = e.target.value;
-    const regex = /^[a-zA-Z]+$/;
+    const regex = /^[a-zA-Z\s]+$/;
 
     // Validación básica: Asegurarse de que el campo no esté vacío.
-    if (nuevoDescripcion.trim() === '') {
-      setErrorDescripcion('La descripcion no puede estar vacío');
+    if (nuevoDescripcion.trim() === "") {
+      setErrorDescripcion("La descripcion no puede estar vacío");
     } else if (!regex.test(nuevoDescripcion)) {
-      setErrorDescripcion('Solo debe contener letras');
-    }else {
-      setErrorDescripcion(''); // Limpiar el mensaje de error si la entrada es válida.
+      setErrorDescripcion("Solo debe contener letras");
+    } else {
+      setErrorDescripcion(""); // Limpiar el mensaje de error si la entrada es válida.
       setDescripcion(nuevoDescripcion); // Actualizar el valor del campo.
-      console.log(descripcion)
+      console.log(descripcion);
     }
   };
 
-  const handleUnidadChange = (e : any) => {
+  const handleUnidadChange = (e: any) => {
     const nuevoUnidad = e.target.value;
 
     // Validación básica: Asegurarse de que el campo no esté vacío.
-    if (nuevoUnidad.trim() === '') {
-      setErrorUnidad('La unidad no puede estar vacío');
+    if (nuevoUnidad.trim() === "") {
+      setErrorUnidad("La unidad no puede estar vacío");
     } else {
-      setErrorUnidad(''); // Limpiar el mensaje de error si la entrada es válida.
+      setErrorUnidad(""); // Limpiar el mensaje de error si la entrada es válida.
       setUnidad_medida(nuevoUnidad); // Actualizar el valor del campo.
-      console.log(unidad_medida)
+      console.log(unidad_medida);
     }
   };
 
-  const handleCantidadChange = (e : any) => {
+  const handleCantidadChange = (e: any) => {
     const nuevoCantidad = e.target.value;
     const regexPrecio = /^\d+(\.\d{1,2})?$/;
-  
+
     // Validación básica: Asegurarse de que el campo no esté vacío.
-    if (nuevoCantidad.trim() === '') {
-      setErrorCantidad('El precio no puede estar vacío');
+    if (nuevoCantidad.trim() === "") {
+      setErrorCantidad("El precio no puede estar vacío");
     } else if (!regexPrecio.test(nuevoCantidad)) {
-      setErrorCantidad('Formato de precio no válido');
+      setErrorCantidad("Formato de precio no válido");
     } else {
-      setErrorCantidad(''); // Limpiar el mensaje de error si la entrada es válida.
+      setErrorCantidad(""); // Limpiar el mensaje de error si la entrada es válida.
       setCantidad(nuevoCantidad); // Actualizar el valor del campo.
     }
   };
 
-  const handleTipoChange = (e : any) => {
+  const handleTipoChange = (e: any) => {
     const nuevoTipo = e.target.value;
-    const regex = /^[a-zA-Z]+$/;
+    const regex = /^[a-zA-Z\s]+$/;
 
     // Validación básica: Asegurarse de que el campo no esté vacío.
-    if (nuevoTipo.trim() === '') {
-      setErrorTipo('El tipo no puede estar vacío');
+    if (nuevoTipo.trim() === "") {
+      setErrorTipo("El tipo no puede estar vacío");
     } else if (!regex.test(nuevoTipo)) {
-      setErrorTipo('Solo debe contener letras');
-    }else {
-      setErrorTipo(''); // Limpiar el mensaje de error si la entrada es válida.
+      setErrorTipo("Solo debe contener letras");
+    } else {
+      setErrorTipo(""); // Limpiar el mensaje de error si la entrada es válida.
       setTipo(nuevoTipo); // Actualizar el valor del campo.
-      console.log(tipo)
+      console.log(tipo);
     }
   };
 
-  const handlePrecioChange = (e : any) => {
+  const handlePrecioChange = (e: any) => {
     const nuevoPrecio = e.target.value;
     const regexPrecio = /^\d+(\.\d{1,2})?$/;
-  
+
     // Validación básica: Asegurarse de que el campo no esté vacío.
-    if (nuevoPrecio.trim() === '') {
-      setErrorPrecio('El precio no puede estar vacío');
+    if (nuevoPrecio.trim() === "") {
+      setErrorPrecio("El precio no puede estar vacío");
     } else if (!regexPrecio.test(nuevoPrecio)) {
-      setErrorPrecio('Formato de precio no válido');
+      setErrorPrecio("Formato de precio no válido");
     } else {
-      setErrorPrecio(''); // Limpiar el mensaje de error si la entrada es válida.
+      setErrorPrecio(""); // Limpiar el mensaje de error si la entrada es válida.
       setPrecio(nuevoPrecio); // Actualizar el valor del campo.
     }
   };
-  
-  const formSubmit = (e:any)=>{
-    e.preventDefault()
-    if (nombre.trim() === '' || descripcion.trim() === '' || unidad_medida.trim() === '' || tipo.trim() === '' || precio === 0) {
+
+  const formSubmit = (e: any) => {
+    e.preventDefault();
+    if (
+      nombre.trim() === "" ||
+      descripcion.trim() === "" ||
+      unidad_medida.trim() === "" ||
+      tipo.trim() === "" ||
+      precio === 0
+    ) {
       // Si algún campo requerido está vacío, muestra un mensaje de error o realiza alguna acción adecuada.
-      Swal.fire('Debe rellenar los campos')
+      Swal.fire("Debe rellenar los campos");
       return;
     }
-  }
+  };
   return (
     <>
-    <div className="producto-title">
-      <div className="title">Productos</div>
-      <button className="campana-button" onClick={showAlert}>
+      <div className="producto-title">
+        <div className="title">Productos</div>
+        <button className="campana-button" onClick={showAlert}>
           <i className="fa-solid fa-bell campana"></i>
         </button>
-    </div>
+      </div>
       <button
-        onClick={() => openModal(1,0, "", "", "", 0, "",0)}
+        onClick={() => openModal(1, 0, "", "", "", 0, "", 0)}
         type="button"
         className="btn btn-dark"
         data-bs-toggle="modal"
@@ -273,190 +289,282 @@ export const Productos = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {productos.map((row) => (
-              <TableRow
-                key={row.producto_id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.producto_id}
-                </TableCell>
-                <TableCell align="right">{row.nombre}</TableCell>
-                <TableCell align="right">{row.descripcion}</TableCell>
-                <TableCell align="right">{row.unidad_medida}</TableCell>
-                <TableCell align="right">{row.cantidad}</TableCell>
-                <TableCell align="right">{row.tipo}</TableCell>
-                <TableCell align="right">{row.precio}</TableCell>
-                <TableCell align="right">
-                  <Button variant="outlined" color="error" onClick={()=>{if (typeof row.producto_id === 'number') eliminar(row.producto_id)}}>
-                    Eliminar
-                  </Button>
-                </TableCell>
-                <TableCell align="right">
-                  <button
-                    onClick={() =>
-                      openModal(
-                        2,
-                        row.producto_id || 0,                        
-                        row.nombre,
-                        row.descripcion,
-                        row.unidad_medida,
-                        row.cantidad,
-                        row.tipo,
-                        row.precio
-                      )
-                    }
-                    type="button"
-                    className="btn btn-dark"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalInsumos"
-                  >
-                    Editar
-                  </button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {productos.map((row) => {
+
+              if (row.nombre === "Ropa de vestir	") {
+                if (row.cantidad <= 100) {
+                  toast.error(
+                    `La cantidad de ${row.nombre} es menor a 300 kg.`,
+                    {}
+                  );
+                } else if (row.cantidad >= 200) {
+                  toast.error(
+                    `La cantidad de ${row.nombre} es mayor a 500 kg.`,
+                    {}
+                  );
+                }
+              }
+
+              if (row.nombre === "Ropa de cama y hogar	") {
+                if (row.cantidad <= 75) {
+                  toast.error(
+                    `La cantidad de ${row.nombre} es menor a 5 kg.`,
+                    {}
+                  );
+                } else if (row.cantidad >= 125) {
+                  toast.error(
+                    `La cantidad de ${row.nombre} es mayor a 10 kg.`,
+                    {}
+                  );
+                }
+              }
+
+              if (row.nombre === "Ropa interior y lenceria	") {
+                if (row.cantidad <= 150) {
+                  toast.error(
+                    `La cantidad de ${row.nombre} es menor a 10 unidades.`,
+                    {}
+                  );
+                } else if (row.cantidad >= 250) {
+                  toast.error(
+                    `La cantidad de ${row.nombre} es mayor a 25 unidades.`,
+                    {}
+                  );
+                }
+              }
+
+              if (row.nombre === "Uniformes y ropa corporativa	") {
+                if (row.cantidad <= 50) {
+                  toast.error(
+                    `La cantidad de ${row.nombre} es menor a 500 unidades.`,
+                    {}
+                  );
+                } else if (row.cantidad >= 100) {
+                  toast.error(
+                    `La cantidad de ${row.nombre} es mayor a 925 unidades.`,
+                    {}
+                  );
+                }
+              }
+
+              if (row.nombre === "Ropa deportiva y de moda informal	") {
+                if (row.cantidad <= 125) {
+                  toast.error(
+                    `La cantidad de ${row.nombre} es menor a 50 unidades.`,
+                    {}
+                  );
+                } else if (row.cantidad >= 250) {
+                  toast.error(
+                    `La cantidad de ${row.nombre} es mayor a 150 unidades.`,
+                    {}
+                  );
+                }
+              }
+
+              return (
+                <TableRow
+                  key={row.producto_id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.producto_id}
+                  </TableCell>
+                  <TableCell align="right">{row.nombre}</TableCell>
+                  <TableCell align="right">{row.descripcion}</TableCell>
+                  <TableCell align="right">{row.unidad_medida}</TableCell>
+                  <TableCell align="right">{row.cantidad}</TableCell>
+                  <TableCell align="right">{row.tipo}</TableCell>
+                  <TableCell align="right">{row.precio}</TableCell>
+                  <TableCell align="right">
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => {
+                        if (typeof row.producto_id === "number")
+                          eliminar(row.producto_id);
+                      }}
+                    >
+                      Eliminar
+                    </Button>
+                  </TableCell>
+                  <TableCell align="right">
+                    <button
+                      onClick={() =>
+                        openModal(
+                          2,
+                          row.producto_id || 0,
+                          row.nombre,
+                          row.descripcion,
+                          row.unidad_medida,
+                          row.cantidad,
+                          row.tipo,
+                          row.precio
+                        )
+                      }
+                      type="button"
+                      className="btn btn-dark"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalInsumos"
+                    >
+                      Editar
+                    </button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+            <Toaster />
           </TableBody>
         </Table>
       </TableContainer>
 
-      <Button variant="contained" onClick={handleReport}>Reporte</Button>
-
+      <Button variant="contained" onClick={handleReport}>
+        Reporte
+      </Button>
 
       <form onSubmit={formSubmit}>
-      <div className="modal-body">
-        <input type="hidden" id="id" />
-        <div className="input-group mb-3">
-          <span className="input-group-text"></span>
+        <div className="modal-body">
+          <input type="hidden" id="id" />
+          <div className="input-group mb-3">
+            <span className="input-group-text"></span>
+          </div>
         </div>
-      </div>
 
-
-
-      <div id="modalInsumos" className="modal fade" aria-hidden="true">
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <label className="h5">{title}</label>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              <input type="hidden" id="id" value={producto_id} onChange={(e) => setProducto_id(parseInt(e.target.value))} />
-              Nombre:
-              <div className="input-group mb-3">
-                <span className="input-group-text">
-                  <i className="fa-solid fa-gift"></i>
-                </span>
-                <input
-                  type="text"
-                  id="nombre"
-                  className="form-control"
-                  placeholder="Nombre"
-                  value={nombre}
-                  onChange={handleNombreChange}
-                />
+        <div id="modalInsumos" className="modal fade" aria-hidden="true">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <label className="h5">{title}</label>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
               </div>
-              {errorName && <p className="error-message">{errorName}</p>}   
-              Descripcion:
-              <div className="input-group mb-3">
-                <span className="input-group-text">
-                  <i className="fa-solid fa-gift"></i>
-                </span>
+              <div className="modal-body">
                 <input
-                  type="text"
-                  id="descripcion"
-                  className="form-control"
-                  placeholder="Descripcion"
-                  value={descripcion}
-                  onChange={handleDescripcionChange}
+                  type="hidden"
+                  id="id"
+                  value={producto_id}
+                  onChange={(e) => setProducto_id(parseInt(e.target.value))}
                 />
+                Nombre:
+                <div className="input-group mb-3">
+                  <span className="input-group-text">
+                    <i className="fa-solid fa-gift"></i>
+                  </span>
+                  <input
+                    type="text"
+                    id="nombre"
+                    className="form-control"
+                    placeholder="Nombre"
+                    value={nombre}
+                    onChange={handleNombreChange}
+                  />
+                </div>
+                {errorName && <p className="error-message">{errorName}</p>}
+                Descripcion:
+                <div className="input-group mb-3">
+                  <span className="input-group-text">
+                    <i className="fa-solid fa-gift"></i>
+                  </span>
+                  <input
+                    type="text"
+                    id="descripcion"
+                    className="form-control"
+                    placeholder="Descripcion"
+                    value={descripcion}
+                    onChange={handleDescripcionChange}
+                  />
+                </div>
+                {errorDescripcion && (
+                  <p className="error-message">{errorDescripcion}</p>
+                )}
+                Unidad Medida:
+                <div className="input-group mb-3">
+                  <span className="input-group-text">
+                    <i className="fa-solid fa-gift"></i>
+                  </span>
+                  <input
+                    type="text"
+                    id="unidad"
+                    className="form-control"
+                    placeholder="Unidad"
+                    value={unidad_medida}
+                    onChange={handleUnidadChange}
+                  />
+                </div>
+                {errorUnidad && <p className="error-message">{errorUnidad}</p>}
+                Cantidad
+                <div className="input-group mb-3">
+                  <span className="input-group-text">
+                    <i className="fa-solid fa-gift"></i>
+                  </span>
+                  <input
+                    type="number"
+                    id="cantidad"
+                    className="form-control"
+                    placeholder="Cantidad"
+                    value={cantidad}
+                    onChange={handleCantidadChange}
+                  />
+                </div>
+                {errorCantidad && (
+                  <p className="error-message">{errorCantidad}</p>
+                )}
+                Tipo:
+                <div className="input-group mb-3">
+                  <span className="input-group-text">
+                    <i className="fa-solid fa-gift"></i>
+                  </span>
+                  <input
+                    type="text"
+                    id="tipo"
+                    className="form-control"
+                    placeholder="Tipo"
+                    value={tipo}
+                    onChange={handleTipoChange}
+                  />
+                </div>
+                {errorTipo && <p className="error-message">{errorTipo}</p>}
+                Precio:
+                <div className="input-group mb-3">
+                  <span className="input-group-text">
+                    <i className="fa-solid fa-gift"></i>
+                  </span>
+                  <input
+                    type="number"
+                    id="precio"
+                    className="form-control"
+                    placeholder="Precio"
+                    value={precio}
+                    onChange={handlePrecioChange}
+                  />
+                </div>
+                {errorPrecio && <p className="error-message">{errorPrecio}</p>}
+                <div className="d-grid col-6 mx-auto">
+                  <button className="btn btn-success">
+                    <i
+                      className="fa-solid fa-floppy-disk"
+                      onClick={(e) => save(e)}
+                    >
+                      Guardar
+                    </i>
+                  </button>
+                </div>
               </div>
-              {errorDescripcion&& <p className="error-message">{errorDescripcion}</p>}   
-              Unidad Medida:
-              <div className="input-group mb-3">
-                <span className="input-group-text">
-                  <i className="fa-solid fa-gift"></i>
-                </span>
-                <input
-                  type="text"
-                  id="unidad"
-                  className="form-control"
-                  placeholder="Unidad"
-                  value={unidad_medida}
-                  onChange={handleUnidadChange}
-                />
-              </div>
-              {errorUnidad && <p className="error-message">{errorUnidad}</p>}   
-              Cantidad
-              <div className="input-group mb-3">
-                <span className="input-group-text">
-                  <i className="fa-solid fa-gift"></i>
-                </span>
-                <input
-                  type="number"
-                  id="cantidad"
-                  className="form-control"
-                  placeholder="Cantidad"
-                  value={cantidad}
-                  onChange={handleCantidadChange}
-                />
-              </div>
-              {errorCantidad && <p className="error-message">{errorCantidad}</p>}
-              Tipo:
-              <div className="input-group mb-3">
-                <span className="input-group-text">
-                  <i className="fa-solid fa-gift"></i>
-                </span>
-                <input
-                  type="text"
-                  id="tipo"
-                  className="form-control"
-                  placeholder="Tipo"
-                  value={tipo}
-                  onChange={handleTipoChange}
-                />
-              </div>
-              {errorTipo && <p className="error-message">{errorTipo}</p>}
-              Precio:
-              <div className="input-group mb-3">
-                <span className="input-group-text">
-                  <i className="fa-solid fa-gift"></i>
-                </span>
-                <input
-                  type="number"
-                  id="precio"
-                  className="form-control"
-                  placeholder="Precio"
-                  value={precio}
-                  onChange={handlePrecioChange}
-                />
-              </div>
-              {errorPrecio && <p className="error-message">{errorPrecio}</p>}
-              <div className="d-grid col-6 mx-auto">
-                <button className="btn btn-success">
-                  <i className="fa-solid fa-floppy-disk" onClick={(e)=>save(e)}>
-                    Guardar
-                  </i>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Cerrar
                 </button>
               </div>
             </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Cerrar
-              </button>
-            </div>
           </div>
         </div>
-      </div>
       </form>
     </>
   );
