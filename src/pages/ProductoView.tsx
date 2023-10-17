@@ -152,6 +152,7 @@ export const Productos = () => {
 
   const showAlert = () => {
     Swal.fire("Alerta de Stockout o Sobreabastecimiento");
+    funcionesIf();
   };
   const handleNombreChange = (e: any) => {
     const nuevoNombre = e.target.value;
@@ -258,6 +259,53 @@ export const Productos = () => {
       return;
     }
   };
+
+  const funcionesIf = () =>{
+    productos.map((row) => {if(row.nombre==="Ropa de vestir"){
+      if (row.cantidad <= 100) {
+        toast.error(`La cantidad de ${row.nombre} es menor a 100 unidades`, {duration: 10000});
+      } else if (row.cantidad >= 200) {
+        toast.error(`La cantidad de ${row.nombre} es mayor a 200 unidades`, {duration: 10000} );
+      }
+    }  
+
+    if(row.nombre==="Ropa de cama y hogar"){
+      if (row.cantidad <= 75) {
+        toast.error(`La cantidad de ${row.nombre} es menor a 75 unidades`, {duration: 10000});
+      } else if (row.cantidad >= 125) {
+        toast.error(`La cantidad de ${row.nombre} es mayor a 125 unidades`, {duration: 10000} );
+      }
+    }  
+
+    if(row.nombre==="Ropa interior y lenceria	"){
+      if (row.cantidad <= 150) {
+        toast.error(`La cantidad de ${row.nombre} es menor a 150 unidades`, {duration: 10000});
+      } else if (row.cantidad >= 250) {
+        toast.error(`La cantidad de ${row.nombre} es mayor a 250 unidades`, {duration: 10000});
+      }
+    }  
+
+    if(row.nombre==="Uniformes y ropa corporativa	"){
+      if (row.cantidad <= 50) {
+        toast.error(`La cantidad de ${row.nombre} es menor a 50 unidades`, {duration: 10000});
+      } else if (row.cantidad >= 100) {
+        toast.error(`La cantidad de ${row.nombre} es mayor a 100 unidades`, {duration: 10000});
+      }
+    }  
+
+    if(row.nombre==="Ropa deportiva y de moda informal	"){
+      if (row.cantidad <= 125) {
+        toast.error(`La cantidad de ${row.nombre} es menor a 125 unidades`, {duration: 10000});
+      } else if (row.cantidad >= 250) {
+        toast.error(`La cantidad de ${row.nombre} es mayor a 250 unidades` , {duration: 10000});
+      }
+          }})
+  }
+
+  useEffect(()=>{
+    funcionesIf()
+  },[productos])
+
   return (
     <>
       <div className="producto-title">
@@ -290,76 +338,6 @@ export const Productos = () => {
           </TableHead>
           <TableBody>
             {productos.map((row) => {
-
-              if (row.nombre === "Ropa de vestir	") {
-                if (row.cantidad <= 100) {
-                  toast.error(
-                    `La cantidad de ${row.nombre} es menor a 300 kg.`,
-                    {}
-                  );
-                } else if (row.cantidad >= 200) {
-                  toast.error(
-                    `La cantidad de ${row.nombre} es mayor a 500 kg.`,
-                    {}
-                  );
-                }
-              }
-
-              if (row.nombre === "Ropa de cama y hogar	") {
-                if (row.cantidad <= 75) {
-                  toast.error(
-                    `La cantidad de ${row.nombre} es menor a 5 kg.`,
-                    {}
-                  );
-                } else if (row.cantidad >= 125) {
-                  toast.error(
-                    `La cantidad de ${row.nombre} es mayor a 10 kg.`,
-                    {}
-                  );
-                }
-              }
-
-              if (row.nombre === "Ropa interior y lenceria	") {
-                if (row.cantidad <= 150) {
-                  toast.error(
-                    `La cantidad de ${row.nombre} es menor a 10 unidades.`,
-                    {}
-                  );
-                } else if (row.cantidad >= 250) {
-                  toast.error(
-                    `La cantidad de ${row.nombre} es mayor a 25 unidades.`,
-                    {}
-                  );
-                }
-              }
-
-              if (row.nombre === "Uniformes y ropa corporativa	") {
-                if (row.cantidad <= 50) {
-                  toast.error(
-                    `La cantidad de ${row.nombre} es menor a 500 unidades.`,
-                    {}
-                  );
-                } else if (row.cantidad >= 100) {
-                  toast.error(
-                    `La cantidad de ${row.nombre} es mayor a 925 unidades.`,
-                    {}
-                  );
-                }
-              }
-
-              if (row.nombre === "Ropa deportiva y de moda informal	") {
-                if (row.cantidad <= 125) {
-                  toast.error(
-                    `La cantidad de ${row.nombre} es menor a 50 unidades.`,
-                    {}
-                  );
-                } else if (row.cantidad >= 250) {
-                  toast.error(
-                    `La cantidad de ${row.nombre} es mayor a 150 unidades.`,
-                    {}
-                  );
-                }
-              }
 
               return (
                 <TableRow
