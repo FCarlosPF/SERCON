@@ -105,11 +105,15 @@ export const Insumos = () => {
         })
         .catch((error) => {
           console.log(error.response.data);
-        });
+        })
     }
     window.location.reload();
     console.log(id);
   };
+
+  useEffect(()=>{
+    funcionesIf()
+  },[insumos])
 
   const eliminar = (insumoId: number) => {
     insumoGateway
@@ -128,6 +132,7 @@ export const Insumos = () => {
 
   const showAlert= ()=>{
     Swal.fire('Alerta de Stockout o Sobreabastecimiento')
+    funcionesIf()
   }
 
   const handleNombreChange = (e : any) => {
@@ -234,14 +239,49 @@ export const Insumos = () => {
     }
   }
 
-  const limitesCantidades: Record<string, { min: number; max: number }> = {
-    Telas: { min: 300, max: 500 },
-    Hilos: { min: 5, max: 10 },
-    Moldes: { min: 10, max: 25 },
-    Etiquetas: { min: 500, max: 925 },
-    Ganchos: { min: 50, max: 150 },
-  };
+  const funcionesIf = () =>{
+    insumos.map((row) => {if(row.nombre==="Telas"){
+      if (row.cantidad <= 300) {
+        toast.error(`La cantidad de ${row.nombre} es menor a 300 kg`, {duration: 10000});
+      } else if (row.cantidad >= 500) {
+        toast.error(`La cantidad de ${row.nombre} es mayor a 500 kg`, {duration: 10000} );
+      }
+    }  
 
+    if(row.nombre==="Hilos"){
+      if (row.cantidad <= 5) {
+        toast.error(`La cantidad de ${row.nombre} es menor a 5 kg`, {duration: 10000});
+      } else if (row.cantidad >= 10) {
+        toast.error(`La cantidad de ${row.nombre} es mayor a 10 kg`, {duration: 10000} );
+      }
+    }  
+
+    if(row.nombre==="Moldes"){
+      if (row.cantidad <= 10) {
+        toast.error(`La cantidad de ${row.nombre} es menor a 10 unidades`, {duration: 10000});
+      } else if (row.cantidad >= 25) {
+        toast.error(`La cantidad de ${row.nombre} es mayor a 25 unidades`, {duration: 10000});
+      }
+    }  
+
+    if(row.nombre==="Etiquetas"){
+      if (row.cantidad <= 500) {
+        toast.error(`La cantidad de ${row.nombre} es menor a 500 unidades`, {duration: 10000});
+      } else if (row.cantidad >= 925) {
+        toast.error(`La cantidad de ${row.nombre} es mayor a 925 unidades`, {duration: 10000});
+      }
+    }  
+
+    if(row.nombre==="Ganchos"){
+      if (row.cantidad <= 50) {
+        toast.error(`La cantidad de ${row.nombre} es menor a 50 unidades`, {duration: 10000});
+      } else if (row.cantidad >= 150) {
+        toast.error(`La cantidad de ${row.nombre} es mayor a 150 unidades` , {duration: 10000});
+      }
+          }})
+  }
+
+  
   return (
     <>
       <div className="insumo-title">
@@ -274,56 +314,6 @@ export const Insumos = () => {
           <TableBody>
           {insumos.map((row) => {
                         
-          if(row.nombre==="Telas"){
-            if (row.cantidad <= 300) {
-              toast.error(`La cantidad de ${row.nombre} es menor a 300 kg.`, {
-              });
-            } else if (row.cantidad >= 500) {
-              toast.error(`La cantidad de ${row.nombre} es mayor a 500 kg.`, {
-              });
-            }
-          }  
-
-          if(row.nombre==="Hilos"){
-            if (row.cantidad <= 5) {
-              toast.error(`La cantidad de ${row.nombre} es menor a 5 kg.`, {
-              });
-            } else if (row.cantidad >= 10) {
-              toast.error(`La cantidad de ${row.nombre} es mayor a 10 kg.`, {
-              });
-            }
-          }  
-
-          if(row.nombre==="Moldes"){
-            if (row.cantidad <= 10) {
-              toast.error(`La cantidad de ${row.nombre} es menor a 10 unidades.`, {
-              });
-            } else if (row.cantidad >= 25) {
-              toast.error(`La cantidad de ${row.nombre} es mayor a 25 unidades.`, {
-              });
-            }
-          }  
-
-          if(row.nombre==="Etiquetas"){
-            if (row.cantidad <= 500) {
-              toast.error(`La cantidad de ${row.nombre} es menor a 500 unidades.`, {
-              });
-            } else if (row.cantidad >= 925) {
-              toast.error(`La cantidad de ${row.nombre} es mayor a 925 unidades.`, {
-              });
-            }
-          }  
-
-          if(row.nombre==="Ganchos"){
-            if (row.cantidad <= 50) {
-              toast.error(`La cantidad de ${row.nombre} es menor a 50 unidades.`, {
-              });
-            } else if (row.cantidad >= 150) {
-              toast.error(`La cantidad de ${row.nombre} es mayor a 150 unidades.`, {
-              });
-            }
-          }  
-
 
           return (
            
@@ -375,7 +365,7 @@ export const Insumos = () => {
               </TableRow>
           );
         })}
-          <Toaster />
+          <Toaster/>
 
           </TableBody>
 
