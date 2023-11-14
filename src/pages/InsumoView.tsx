@@ -10,8 +10,9 @@ import "../css/insumos.css";
 import { useEffect, useState } from "react";
 import InsumoGateway from "../gateway/InsumoGateway";
 import Swal from "sweetalert2";
-import ReporteGateway from "../gateway/ReporteGateway";
 import  { Toaster, toast} from 'react-hot-toast';
+import ReporteInsumoGateway from "../gateway/ReporteInsumoGateway";
+import DropdownButtonInsumo from "../components/DropdownButtonInsumo";
 
 export const Insumos = () => {
   const [insumos, setInsumos] = useState<Insumo[]>([]);
@@ -23,14 +24,13 @@ export const Insumos = () => {
   const [tipo, setTipo] = useState("");
   const [title, setTitle] = useState("");
   const insumoGateway = new InsumoGateway();
-  const reporteGateway = new ReporteGateway();
   const [errorName, setErrorName] = useState('');
   const [errorDescripcion, setErrorDescripcion] = useState('');
   const [errorUnidad, setErrorUnidad] = useState('');
   const [errorCantidad, setErrorCantidad] = useState('');
   const [errorTipo, setErrorTipo] = useState('');
   const [errorCampana, setErrorCampana] = useState<Boolean>(false);
-
+  const reporteInsumoGateway = new ReporteInsumoGateway()
 
   interface Insumo {
     insumo_id?: number;
@@ -42,7 +42,7 @@ export const Insumos = () => {
   }
 
   const handleReport = ()=>{
-    reporteGateway
+    reporteInsumoGateway
     .generateReportInsumo()
     .then((response) => {
       console.log(response);
@@ -372,7 +372,9 @@ export const Insumos = () => {
         </Table>
       </TableContainer>
 
-      <Button variant="contained" onClick={handleReport}>Reporte</Button>
+      <Button variant="contained" onClick={handleReport}>Reporte General</Button>
+      <br/>
+        <DropdownButtonInsumo/>
 
       <div className="modal-body">
         <input type="hidden" id="id" />

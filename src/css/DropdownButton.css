@@ -1,0 +1,27 @@
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+button {
+  padding: 8px;
+  margin: 4px;
+  text-align: left;
+  cursor: pointer;
+  background-color: #f9f9f9;
+  border: none;
+}
+
+button:hover {
+  background-color: #ddd;
+}

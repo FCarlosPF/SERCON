@@ -15,8 +15,9 @@ import InsumoGateway from "../gateway/InsumoGateway";
 import { error } from "console";
 import ProductoGateway from "../gateway/ProductosGateway";
 import Swal from "sweetalert2";
-import ReporteGateway from "../gateway/ReporteGateway";
 import toast, { Toaster } from "react-hot-toast";
+import ReporteProductoGateway from "../gateway/ReporteProductoGateway";
+import DropdownButtonProducto from "../components/DropdownButtonProducto";
 
 export const Productos = () => {
   const [productos, setProductos] = useState<Producto[]>([]);
@@ -36,7 +37,7 @@ export const Productos = () => {
   const [errorPrecio, setErrorPrecio] = useState("");
   const [errorCantidad, setErrorCantidad] = useState("");
   const productoGateway = new ProductoGateway();
-  const reporteGateway = new ReporteGateway();
+  const reporteProductoGateway = new ReporteProductoGateway();
 
   interface Producto {
     producto_id?: number;
@@ -60,7 +61,7 @@ export const Productos = () => {
   }, []);
 
   const handleReport = () => {
-    reporteGateway
+    reporteProductoGateway
       .generateReportProducto()
       .then((response) => {
         console.log(response);
@@ -396,9 +397,10 @@ export const Productos = () => {
       </TableContainer>
 
       <Button variant="contained" onClick={handleReport}>
-        Reporte
+        Reporte General
       </Button>
-
+      <br />
+      <DropdownButtonProducto/>
       <form onSubmit={formSubmit}>
         <div className="modal-body">
           <input type="hidden" id="id" />
