@@ -1,10 +1,11 @@
 import { Button } from "@mui/material";
 import ReporteStock from "../gateway/ReporteStock";
-import '../css/Home.css'
+import "../css/Home.css";
+import MovimientoGateway from "../gateway/MovimientoGateway";
 
 export const Home = () => {
   const reporteStock = new ReporteStock();
-
+  const reporteMovimiento = new MovimientoGateway();
   const handleReportStockOut = () => {
     reporteStock
       .generateReportStockOut()
@@ -27,6 +28,17 @@ export const Home = () => {
       });
   };
 
+  const handleReportMovimiento = () => {
+    reporteMovimiento
+      .generateReportMovimiento()
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
+  };
+
   return (
     <>
       <div className="home-buttons">
@@ -36,7 +48,9 @@ export const Home = () => {
         <Button color="secondary" onClick={handleReportSobreabastecimiento}>
           Reporte de Sobreabastecimiento
         </Button>
-        <Button color="secondary">Reporte de Rotación de Inventario</Button>
+        <Button color="secondary" onClick={handleReportMovimiento}>
+          Reporte de Rotación de Inventario
+        </Button>
       </div>
     </>
   );
